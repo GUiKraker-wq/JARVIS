@@ -253,10 +253,10 @@ html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--te
   <div class="modal-box">
     <h3 class="mono">Configurações</h3>
     <div id="settings-mode"></div>
-    <label>Chave da Anthropic (só necessária fora do Netlify)</label>
-    <input id="api-key" type="password" placeholder="sk-ant-...">
-    <p class="hint">Quando o site roda no Netlify com a variável ANTHROPIC_API_KEY configurada,
-      a chave fica no servidor e este campo pode ficar vazio.</p>
+    <label>Chave do Gemini (só necessária fora do Netlify)</label>
+    <input id="api-key" type="password" placeholder="AIzaSy...">
+    <p class="hint">Pegue de graça em aistudio.google.com/apikey. Quando o site roda no Netlify
+      com a variável GEMINI_API_KEY configurada, a chave fica no servidor e este campo pode ficar vazio.</p>
     <label>Código de acesso (se o site estiver protegido)</label>
     <input id="access-code" type="password" placeholder="opcional">
     <div class="modal-actions">
@@ -301,7 +301,7 @@ var CONFIG = {
   persona: "mordomo britânico descontraído",
   wakeWord: "ei kraker",
   voiceGender: "masculina",
-  model: "claude-sonnet-5"
+  model: "gemini-2.5-flash"
 };
 
 var AREA = {
@@ -362,7 +362,7 @@ var editingId = null;
 var voicesCache = [];
 var pulseState = { edges: [], els: [], synapses: [] };
 var lastTs = null;
-var SERVER = { claude: false, notion: false, needsCode: false };
+var SERVER = { gemini: false, notion: false, needsCode: false };
 
 /* ---------- persistência ---------- */
 function saveNotes(){
@@ -451,9 +451,9 @@ function proxyHeaders(){
 /* ---------- descoberta do backend ---------- */
 function probeServer(){
   if(!isHttp()){ updateModeChip(); return Promise.resolve(); }
-  var a = fetch("/.netlify/functions/claude")
+  var a = fetch("/.netlify/functions/gemini")
     .then(function(r){ return r.ok ? r.json() : null; })
-    .then(function(d){ if(d){ SERVER.claude = !!d.hasKey; SERVER.needsCode = !!d.needsCode; } })
+    .then(function(d){ if(d){ SERVER.gemini = !!d.hasKey; SERVER.needsCode = !!d.needsCode; } })
     .catch(function(){});
   var b = fetch("/.netlify/functions/notion")
     .then(function(r){ return r.ok ? r.json() : null; })
@@ -464,13 +464,13 @@ function probeServer(){
 function updateModeChip(){
   var chip = document.getElementById("mode-chip");
   var info = document.getElementById("settings-mode");
-  if(SERVER.claude){
+  if(SERVER.gemini){
     chip.textContent = "🔒 chave no servidor";
-    info.textContent = "Este site usa a chave guardada no Netlify. Nada de chave no navegador.";
+    info.textContent = "Este site usa a chave do Gemini guardada no Netlify. Nada de chave no navegador.";
     info.className = "ok";
   }else{
     chip.textContent = "🔑 chave no navegador";
-    info.textContent = "Sem chave no servidor: o Kraker usa a chave salva neste navegador.";
+    info.textContent = "Sem chave no servidor: o Kraker usa a chave do Gemini salva neste navegador.";
     info.className = "";
   }
 }
@@ -626,26 +626,54 @@ function upsertNote(area, title, body){
 }
 
 /* ---------- cérebro: chamada à API ---------- */
-function callClaude(payload){
-  if(SERVER.claude){
-    return fetch("/.netlify/functions/claude", {
+/**
+ * O Gemini fala um formato diferente do genérico usado aqui dentro
+ * (role "model" em vez de "assistant", texto em "parts", etc.). Esta função
+ * traduz nos dois sentidos e devolve sempre { ok, noKey, data } —
+ * data já no formato { content:[{type:"text",text}] } que o resto do
+ * código espera, seja a resposta vinda do proxy ou direto do Google.
+ */
+function toGeminiBody(payload){
+  return {
+    contents: payload.messages.map(function(m){
+      return { role: m.role === "assistant" ? "model" : "user", parts: [{ text: String(m.content || "") }] };
+    }),
+    systemInstruction: { parts: [{ text: String(payload.system || "") }] },
+    generationConfig: { maxOutputTokens: payload.max_tokens }
+  };
+}
+function fromGeminiRaw(raw){
+  var cand = raw && raw.candidates && raw.candidates[0];
+  var parts = cand && cand.content && cand.content.parts;
+  var txt = Array.isArray(parts) ? parts.map(function(p){ return p.text || ""; }).join("") : "";
+  return { content: [{ type: "text", text: txt }] };
+}
+function callAI(payload){
+  if(SERVER.gemini){
+    return fetch("/.netlify/functions/gemini", {
       method: "POST",
       headers: proxyHeaders(),
       body: JSON.stringify(payload)
+    }).then(function(res){
+      return res.json().catch(function(){ return {}; }).then(function(data){
+        return { ok: res.ok, data: data };
+      });
     });
   }
   var key = "";
-  try{ key = (localStorage.getItem("anthropic_key") || "").trim(); }catch(e){}
-  if(!key) return Promise.resolve({ __noKey: true });
-  return fetch("https://api.anthropic.com/v1/messages", {
+  try{ key = (localStorage.getItem("gemini_key") || "").trim(); }catch(e){}
+  if(!key) return Promise.resolve({ noKey: true });
+  var url = "https://generativelanguage.googleapis.com/v1beta/models/" +
+    encodeURIComponent(payload.model) + ":generateContent?key=" + encodeURIComponent(key);
+  return fetch(url, {
     method: "POST",
-    headers: {
-      "x-api-key": key,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-      "content-type": "application/json"
-    },
-    body: JSON.stringify(payload)
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(toGeminiBody(payload))
+  }).then(function(res){
+    return res.json().catch(function(){ return {}; }).then(function(raw){
+      if(!res.ok) return { ok: false, data: { error: (raw.error && raw.error.message) || "Erro do Gemini." } };
+      return { ok: true, data: fromGeminiRaw(raw) };
+    });
   });
 }
 
@@ -657,36 +685,35 @@ function processCommand(text){
   history.push({ role: "user", content: text });
   if(history.length > MAX_HISTORY) history = history.slice(-MAX_HISTORY);
 
-  callClaude({
+  callAI({
     model: CONFIG.model,
     max_tokens: 400,
     system: buildSystemPrompt(),
     messages: history
   }).then(function(res){
-    if(res && res.__noKey){
+    if(res.noKey){
       history.pop();
-      var msg = "Não encontrei sua chave de API, chefe. Abra as configurações e cole a chave da Anthropic.";
+      var msg = "Não encontrei sua chave do Gemini, chefe. Abra as configurações e cole a chave do Google AI Studio.";
       setAssistantLine(msg);
       ttsSpeak(msg);
       return null;
     }
     if(!res.ok){
       history.pop();
-      return res.json().catch(function(){ return {}; }).then(function(err){
-        var msg;
-        if(err && err.code === "BAD_CODE"){
-          msg = "O código de acesso deste site está errado, chefe. Confira nas configurações.";
-        }else if(err && err.code === "NO_SERVER_KEY"){
-          msg = "O servidor está sem chave configurada, chefe. Defina a variável no painel do Netlify.";
-        }else{
-          msg = "Deu erro na chamada da API, chefe. Confira se a chave está correta.";
-        }
-        setAssistantLine(msg);
-        ttsSpeak(msg);
-        return null;
-      });
+      var err = res.data || {};
+      var msg;
+      if(err.code === "BAD_CODE"){
+        msg = "O código de acesso deste site está errado, chefe. Confira nas configurações.";
+      }else if(err.code === "NO_SERVER_KEY"){
+        msg = "O servidor está sem chave configurada, chefe. Defina a variável no painel do Netlify.";
+      }else{
+        msg = "Deu erro na chamada da API, chefe. Confira se a chave está correta.";
+      }
+      setAssistantLine(msg);
+      ttsSpeak(msg);
+      return null;
     }
-    return res.json();
+    return res.data;
   }).then(function(data){
     if(!data) return;
     var out = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : "";
@@ -1047,7 +1074,7 @@ document.addEventListener("DOMContentLoaded", function(){
   probeServer();
 
   try{
-    var savedKey = localStorage.getItem("anthropic_key");
+    var savedKey = localStorage.getItem("gemini_key");
     if(savedKey) document.getElementById("api-key").value = savedKey;
     var savedCode = localStorage.getItem("kraker_code");
     if(savedCode) document.getElementById("access-code").value = savedCode;
@@ -1078,7 +1105,7 @@ document.addEventListener("DOMContentLoaded", function(){
     document.getElementById("settings-modal").classList.add("hidden");
   });
   document.getElementById("api-key").addEventListener("input", function(e){
-    try{ localStorage.setItem("anthropic_key", e.target.value.trim()); }catch(err){}
+    try{ localStorage.setItem("gemini_key", e.target.value.trim()); }catch(err){}
   });
   document.getElementById("access-code").addEventListener("input", function(e){
     try{ localStorage.setItem("kraker_code", e.target.value.trim()); }catch(err){}

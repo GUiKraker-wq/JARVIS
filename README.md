@@ -4,7 +4,7 @@ Assistente de voz estilo Jarvis com **Second Brain**: um grafo neural animado qu
 guarda o contexto da sua vida em notas e injeta esse contexto em toda resposta.
 
 - Voz (fala e escuta) com a Web Speech API nativa do navegador
-- Cérebro na API da Anthropic (Claude)
+- Cérebro na API do Gemini (Google AI Studio, tem camada gratuita)
 - Second Brain com memória viva: o assistente cria e atualiza notas sozinho
 - Sincronização opcional com o Notion
 
@@ -13,14 +13,14 @@ guarda o contexto da sua vida em notas e injeta esse contexto em toda resposta.
 ```
 index.html                    o app inteiro (HTML + CSS + JS, sem bibliotecas)
 netlify.toml                  configuração do deploy
-netlify/functions/claude.mjs  proxy da API da Anthropic (guarda a chave)
+netlify/functions/gemini.mjs  proxy da API do Gemini (guarda a chave)
 netlify/functions/notion.mjs  ponte com a API do Notion
 ```
 
 ## Rodando local
 
 Basta abrir `index.html` no Chrome. Nesse modo não existe servidor, então a chave
-da Anthropic precisa ser colada em **⚙ Configurações** (fica salva só no seu
+do Gemini precisa ser colada em **⚙ Configurações** (fica salva só no seu
 navegador). A sincronização com o Notion não funciona sem o site publicado.
 
 ## Publicando no Netlify
@@ -31,9 +31,14 @@ navegador). A sincronização com o Notion não funciona sem o site publicado.
 
    | Variável | Obrigatória | Para que serve |
    |---|---|---|
-   | `ANTHROPIC_API_KEY` | sim | chave da API da Anthropic (`sk-ant-...`) |
+   | `GEMINI_API_KEY` | sim | chave grátis do Google AI Studio (`AIzaSy...`) |
    | `ACCESS_CODE` | recomendada | senha simples que libera o uso do site |
    | `NOTION_TOKEN` | só p/ Notion | token da sua integração do Notion (`ntn_...`) |
+
+   A chave do Gemini se cria de graça em <https://aistudio.google.com/apikey>
+   (login com conta Google). O modelo padrão é `gemini-2.5-flash`, que entra na
+   camada gratuita; para trocar de modelo, edite `CONFIG.model` no topo do
+   `<script>` dentro de `index.html`.
 
 3. Publique. O app detecta sozinho que existe chave no servidor e mostra
    **🔒 chave no servidor** no topo.
