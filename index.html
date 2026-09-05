@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>KRAKER</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%231e90ff'/><circle cx='50' cy='50' r='20' fill='%23ff3b30'/></svg>">
+<style>
+:root{
+  --primary:#1e90ff;
+  --secondary:#ff3b30;
+  --bg:#03050a;
+  --panel:#0b0f1a;
+  --panel2:#10151f;
+  --text:#e9edf5;
+  --muted:#8792a6;
+  --border:rgba(255,255,255,.08);
+  --green:#34d399;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.hidden{display:none !important;}
+.mono{font-family:"SF Mono",SFMono-Regular,Consolas,"Liberation Mono",Menlo,monospace;}
+
+#screen-boot,#screen-activate{
+  position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 40%,#0d1830 0%,#03050a 70%);
+  text-align:center;padding:20px;z-index:50;transition:opacity .6s ease;
+}
+#screen-boot.fade-out{opacity:0;}
+.big-title{
+  font-size:clamp(2.4rem,9vw,5.5rem);font-weight:700;letter-spacing:.08em;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.gradient-hr{
+  width:min(420px,70vw);height:2px;margin:22px 0;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));opacity:.7;
+}
+.blink{animation:blink 1.1s steps(2,start) infinite;letter-spacing:.25em;color:var(--muted);font-size:.85rem;}
+@keyframes blink{50%{opacity:.15;}}
+.boot-version{margin-top:26px;color:var(--muted);font-size:.75rem;letter-spacing:.15em;}
+
+.btn-activate{
+  margin-top:30px;padding:16px 34px;font-size:1rem;letter-spacing:.08em;border-radius:999px;
+  border:1px solid var(--primary);
+  background:linear-gradient(90deg,rgba(30,144,255,.18),rgba(255,59,48,.18));
+  color:var(--text);cursor:pointer;transition:transform .2s,box-shadow .2s;
+}
+.btn-activate:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(30,144,255,.35);}
+.activate-hint{margin-top:14px;color:var(--muted);font-size:.75rem;letter-spacing:.15em;}
+
+#app{min-height:100vh;display:flex;flex-direction:column;}
+
+.topbar{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:12px 18px;border-bottom:1px solid var(--border);background:rgba(8,11,18,.7);
+  backdrop-filter:blur(6px);position:sticky;top:0;z-index:10;
+}
+.topbar .brand{letter-spacing:.1em;font-weight:700;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+.chip{
+  font-size:.72rem;color:var(--muted);border:1px solid var(--border);
+  border-radius:999px;padding:5px 12px;white-space:nowrap;
+}
+
+.stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;gap:18px;}
+
+.orb-wrap{position:relative;width:min(240px,52vw);height:min(240px,52vw);}
+.orb{
+  width:100%;height:100%;border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle at 35% 30%,#7fc8ff,var(--primary) 45%,var(--secondary) 100%);
+  box-shadow:0 0 60px rgba(30,144,255,.4),inset 0 0 40px rgba(255,255,255,.15);
+}
+.orb.idle{animation:pulse-idle 3.2s ease-in-out infinite;}
+.orb.listening{animation:pulse-listen 1.1s ease-in-out infinite;}
+.orb.thinking{animation:pulse-think .55s ease-in-out infinite;}
+.orb.speaking{animation:pulse-speak 1.6s ease-in-out infinite;}
+@keyframes pulse-idle{0%,100%{transform:scale(1);opacity:.9;}50%{transform:scale(1.03);opacity:1;}}
+@keyframes pulse-listen{0%,100%{transform:scale(1);box-shadow:0 0 60px rgba(30,144,255,.5);}50%{transform:scale(1.08);box-shadow:0 0 90px rgba(30,144,255,.75);}}
+@keyframes pulse-think{0%,100%{transform:scale(.97);}50%{transform:scale(1.05);}}
+@keyframes pulse-speak{0%,100%{transform:scale(1);box-shadow:0 0 50px rgba(255,59,48,.4);}50%{transform:scale(1.06);box-shadow:0 0 90px rgba(255,59,48,.6);}}
+
+.assistant-name{letter-spacing:.12em;font-size:1.4rem;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+
+.lines{max-width:640px;width:100%;text-align:center;min-height:70px;}
+.line-user{color:var(--muted);font-size:.95rem;margin-bottom:6px;}
+.line-assistant{font-size:1.05rem;}
+.status-text{color:var(--muted);font-size:.8rem;letter-spacing:.08em;margin-top:6px;}
+
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.round-btn{
+  width:52px;height:52px;border-radius:50%;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);cursor:pointer;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;transition:background .2s;
+}
+.round-btn:hover{background:var(--panel);}
+#text-input{
+  padding:10px 14px;border-radius:20px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);min-width:220px;max-width:420px;flex:1;
+}
+
+.brain-panel{border-top:1px solid var(--border);padding:18px;background:rgba(6,9,15,.5);}
+.brain-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.brain-title{font-weight:700;letter-spacing:.04em;}
+.brain-sub{color:var(--muted);font-size:.8rem;}
+.brain-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+#brain-status{color:var(--green);font-size:.78rem;min-height:18px;margin-bottom:6px;}
+.icon-btn{
+  width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);cursor:pointer;font-size:.95rem;
+}
+.icon-btn:hover{background:var(--panel);}
+#graph-container{width:100%;max-width:1000px;margin:0 auto;aspect-ratio:1000/540;}
+#graph-container svg{width:100%;height:100%;display:block;}
+
+.edge-path{animation:dashmove 3s linear infinite;}
+@keyframes dashmove{to{stroke-dashoffset:-40;}}
+
+.node-ring{animation:breathe 2.6s ease-in-out infinite;transform-origin:center;}
+@keyframes breathe{0%,100%{opacity:.35;}50%{opacity:.9;}}
+.node{cursor:pointer;}
+.node-label{fill:var(--muted);font-size:12px;}
+.node-core.flash{animation:flash .4s ease-in-out 3;}
+@keyframes flash{50%{filter:brightness(1.9);}}
+.core{animation:core-pulse 2.4s ease-in-out infinite;transform-origin:center;}
+@keyframes core-pulse{0%,100%{opacity:.9;}50%{opacity:1;}}
+.core-ring{animation:breathe 3.4s ease-in-out infinite;}
+
+#legend{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:10px;}
+.legend-items{display:flex;flex-wrap:wrap;gap:14px;font-size:.78rem;color:var(--muted);}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.legend-item i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.legend-ok{color:var(--green);font-size:.78rem;}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;z-index:60;padding:16px;}
+.modal-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px;
+  width:min(460px,100%);max-height:90vh;overflow-y:auto;}
+.modal-box h3{margin:0 0 4px;letter-spacing:.06em;}
+.modal-box label{display:block;margin-top:12px;font-size:.8rem;color:var(--muted);}
+.modal-box input,.modal-box select,.modal-box textarea{
+  width:100%;margin-top:4px;padding:8px 10px;border-radius:8px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);font-family:inherit;font-size:.9rem;
+}
+.modal-box textarea{min-height:90px;resize:vertical;}
+.hint{color:var(--muted);font-size:.78rem;line-height:1.5;margin:8px 0 0;}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.modal-actions button,.btn-inline{
+  padding:8px 14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--text);cursor:pointer;font-size:.85rem;
+}
+.modal-actions button:hover,.btn-inline:hover{background:var(--panel);}
+.btn-inline{margin-top:8px;width:100%;}
+#btn-delete{border-color:var(--secondary);color:var(--secondary);margin-right:auto;}
+#notion-status,#settings-mode{font-size:.78rem;color:var(--muted);margin-top:10px;min-height:18px;}
+.ok{color:var(--green) !important;}
+.err{color:var(--secondary) !important;}
+
+@media (max-width:520px){
+  .topbar{flex-direction:column;align-items:stretch;}
+  .topbar-right{justify-content:space-between;}
+  .brain-header{flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<div id="screen-boot">
+  <div class="big-title mono">KRAKER</div>
+  <div class="gradient-hr"></div>
+  <div class="blink mono">SINCRONIZANDO DADOS...</div>
+  <div class="boot-version mono">v5.0 · REBUILD</div>
+</div>
+
+<div id="screen-activate" class="hidden">
+  <div class="big-title mono">KRAKER</div>
+  <button class="btn-activate mono" id="btn-activate">► ATIVAR SISTEMA</button>
+  <div class="activate-hint mono">CLIQUE PARA INICIAR</div>
+</div>
+
+<div id="app" class="hidden">
+  <div class="topbar">
+    <div class="brand mono">KRAKER</div>
+    <div class="topbar-right">
+      <span id="mode-chip" class="chip mono">verificando...</span>
+      <button class="icon-btn" id="btn-settings" title="Configurações">⚙</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="orb-wrap">
+      <div id="orb" class="orb idle"></div>
+    </div>
+    <div class="assistant-name mono">KRAKER</div>
+    <div class="lines">
+      <div class="line-user" id="line-user"></div>
+      <div class="line-assistant" id="line-assistant">Clique no orbe ou diga "Ei Kraker" para começar, chefe.</div>
+      <div class="status-text" id="status-text">Em espera.</div>
+    </div>
+    <div class="controls">
+      <button class="round-btn" id="btn-mic" title="Microfone">🎙️</button>
+      <input id="text-input" type="text" placeholder="ou digite e tecle Enter">
+      <button class="round-btn" id="btn-stop" title="Interromper fala">⏹</button>
+    </div>
+  </div>
+
+  <div class="brain-panel">
+    <div class="brain-header">
+      <div>
+        <div class="brain-title">🧠 SECOND BRAIN</div>
+        <div class="brain-sub">Contexto vivo que personaliza cada resposta do Kraker</div>
+      </div>
+      <div class="brain-right">
+        <span id="brain-counts" class="brain-sub"></span>
+        <button class="icon-btn" id="btn-new-note" title="Nova nota">+</button>
+        <button class="icon-btn" id="btn-export" title="Baixar notas (JSON)">⬇</button>
+        <button class="icon-btn" id="btn-import" title="Carregar notas de um arquivo">⬆</button>
+        <button class="icon-btn" id="btn-notion" title="Sincronizar com o Notion">◈</button>
+        <button class="icon-btn" id="btn-reload" title="Recarregar grafo">⟳</button>
+      </div>
+    </div>
+    <div id="brain-status"></div>
+    <div id="graph-container"></div>
+    <div id="legend"></div>
+  </div>
+</div>
+
+<input type="file" id="file-import" accept=".json,application/json" class="hidden">
+
+<div id="note-modal" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="modal-heading" class="mono">Nota</h3>
+    <label>Título</label>
+    <input id="f-title" type="text">
+    <label>Área</label>
+    <select id="f-area"></select>
+    <label>Conteúdo</label>
+    <textarea id="f-body"></textarea>
+    <div class="modal-actions">
+      <button id="btn-delete">Excluir</button>
+      <button id="btn-cancel">Cancelar</button>
+      <button id="btn-save">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="settings-modal" class="modal hidden">
+  <div class="modal-box">
+    <h3 class="mono">Configurações</h3>
+    <div id="settings-mode"></div>
+    <label>Chave da Anthropic (só necessária fora do Netlify)</label>
+    <input id="api-key" type="password" placeholder="sk-ant-...">
+    <p class="hint">Quando o site roda no Netlify com a variável ANTHROPIC_API_KEY configurada,
+      a chave fica no servidor e este campo pode ficar vazio.</p>
+    <label>Código de acesso (se o site estiver protegido)</label>
+    <input id="access-code" type="password" placeholder="opcional">
+    <div class="modal-actions">
+      <button id="btn-settings-close">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="notion-modal" class="modal hidden">
+  <div class="modal-box">
+    <h3 class="mono">Notion</h3>
+    <p class="hint">A sincronização usa a base "Kraker · Second Brain" no seu Notion.
+      Se ainda não existir, cole o link de uma página onde ela deve ser criada e clique em criar.</p>
+
+    <label>Link (ou ID) da página do Notion</label>
+    <input id="f-notion-parent" type="text" placeholder="https://www.notion.so/...">
+    <button class="btn-inline" id="btn-notion-setup">Criar base no Notion</button>
+
+    <label>ID da base sincronizada</label>
+    <input id="f-notion-db" type="text" placeholder="preenchido automaticamente">
+
+    <button class="btn-inline" id="btn-notion-copy">Copiar tudo em Markdown</button>
+
+    <div id="notion-status"></div>
+
+    <div class="modal-actions">
+      <button id="btn-notion-import">Importar do Notion</button>
+      <button id="btn-notion-export">Enviar pro Notion</button>
+      <button id="btn-notion-close">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var CONFIG = {
+  name: "Kraker",
+  address: "chefe",
+  themeColor: { primary: "#1e90ff", secondary: "#ff3b30" },
+  persona: "mordomo britânico descontraído",
+  wakeWord: "ei kraker",
+  voiceGender: "masculina",
+  model: "claude-sonnet-5"
+};
+
+var AREA = {
+  metas:       { label: "Metas",       color: "#fbbf24" },
+  trabalho:    { label: "Carreira",    color: "#ff5547" },
+  projetos:    { label: "Projetos",    color: "#8b7cff" },
+  financas:    { label: "Finanças",    color: "#f7931a" },
+  aprendizado: { label: "Aprendizado", color: "#2dd4ff" },
+  saude:       { label: "Saúde",       color: "#10b981" },
+  relacoes:    { label: "Relações",    color: "#ec4899" },
+  meta:        { label: "Perfil",      color: "#8a90a6" }
+};
+
+var DEFAULT_NOTES = [
+  { id: 1,  area: "meta",        title: "Guilherme",               body: "22 anos, mora no Butantã (São Paulo). Analista de operações acadêmicas na Berlitz Brasil." },
+  { id: 2,  area: "metas",       title: "Metas Curto Prazo",        body: "Organizar os estudos, potencializar o trabalho e extrair o máximo do tempo nos próximos 3 a 6 meses." },
+  { id: 3,  area: "metas",       title: "Formar-se",                body: "Concluir a graduação atual." },
+  { id: 4,  area: "metas",       title: "Direito PUC/USP",          body: "Meta de longo prazo: passar para estudar Direito na PUC ou na USP." },
+  { id: 5,  area: "metas",       title: "Consultorias",             body: "Meta de longo prazo: ganhar dinheiro com consultorias especializadas." },
+  { id: 6,  area: "trabalho",    title: "Berlitz",                  body: "Analista de Operações na Berlitz Brasil, responsável por 65% das operações de aulas (linha Gold). Lidera uma equipe de 3 pessoas e garante a eficiência operacional desde a matrícula até o fim do pacote de aulas do aluno. Foco atual: integrar a jornada do cliente entre departamentos, tornando o trabalho mais qualitativo." },
+  { id: 7,  area: "projetos",    title: "Idiomas",                  body: "Estudando inglês, francês e espanhol." },
+  { id: 8,  area: "projetos",    title: "EdTech",                   body: "Projeto pessoal de abrir uma edtech." },
+  { id: 9,  area: "projetos",    title: "Consultoria",              body: "Projeto pessoal de abrir uma consultoria própria." },
+  { id: 10, area: "financas",    title: "Renda Extra",              body: "Objetivo de ter uma renda extra além do salário fixo e conseguir bicos para empresas estrangeiras, recebendo em moeda forte." },
+  { id: 11, area: "aprendizado", title: "Faculdade FIAP",           body: "Cursa Administração com Gestão de TI na FIAP." },
+  { id: 12, area: "aprendizado", title: "Leituras Atuais",          body: "Lendo 'Porque Deus é Melhor que o Diabo' e 'Pedagogia do Oprimido'." },
+  { id: 13, area: "aprendizado", title: "Relações Internacionais",  body: "Também estuda Relações Internacionais, mas trancou o semestre por questões financeiras; pretende voltar no próximo ano." },
+  { id: 14, area: "aprendizado", title: "Visão Crítica",            body: "Quer aprender um pouco de tudo, se tornar um bom gestor e desenvolver uma análise crítica e imparcial sobre qualquer assunto." },
+  { id: 15, area: "relacoes",    title: "Família",                  body: "Pai, mãe e irmão." },
+  { id: 16, area: "relacoes",    title: "Amigos",                   body: "Um grupo de amigos próximos com quem mantém uma relação de ajuda mútua." }
+];
+
+var DEFAULT_REL = [
+  [1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8],[1,9],[1,10],[1,11],[1,15],[1,16],
+  [2,6],[2,7],[2,11],
+  [3,4],[3,11],[3,13],
+  [4,9],[4,14],
+  [5,8],[5,9],[5,10],
+  [6,7],
+  [8,9],[8,10],
+  [9,10],
+  [11,13],[11,14],
+  [12,14],
+  [15,16]
+];
+
+var MAX_HISTORY = 20;
+
+var NOTES = [];
+var REL = [];
+var history = [];
+var recognition = null;
+var listening = false;
+var busy = false;
+var activated = false;
+var wantListening = false;
+var editingId = null;
+var voicesCache = [];
+var pulseState = { edges: [], els: [], synapses: [] };
+var lastTs = null;
+var SERVER = { claude: false, notion: false, needsCode: false };
+
+/* ---------- persistência ---------- */
+function saveNotes(){
+  try{
+    localStorage.setItem("jarvis_notes", JSON.stringify({ notes: NOTES, rel: REL }));
+  }catch(e){}
+}
+function loadNotesFromStorage(){
+  try{
+    var raw = localStorage.getItem("jarvis_notes");
+    if(raw){
+      var parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.notes) && parsed.notes.length){
+        NOTES = parsed.notes;
+        REL = Array.isArray(parsed.rel) ? parsed.rel : [];
+        return;
+      }
+    }
+  }catch(e){}
+  NOTES = DEFAULT_NOTES.map(function(n){ return { id:n.id, area:n.area, title:n.title, body:n.body }; });
+  REL = DEFAULT_REL.map(function(p){ return [p[0], p[1]]; });
+  saveNotes();
+}
+function nextId(){
+  var max = 0;
+  NOTES.forEach(function(n){ if(n.id > max) max = n.id; });
+  return max + 1;
+}
+function relExists(a, b){
+  return REL.some(function(p){
+    return (p[0] === a && p[1] === b) || (p[0] === b && p[1] === a);
+  });
+}
+function hubId(){
+  var hub = NOTES.find(function(n){ return n.area === "meta"; });
+  return hub ? hub.id : (NOTES.length ? NOTES[0].id : null);
+}
+/** Toda nota precisa de pelo menos um fio ligando ela à teia. */
+function linkOrphans(){
+  var connected = {};
+  REL.forEach(function(p){ connected[p[0]] = true; connected[p[1]] = true; });
+  var hub = hubId();
+  if(hub === null) return;
+  NOTES.forEach(function(n){
+    if(!connected[n.id] && n.id !== hub) REL.push([hub, n.id]);
+  });
+}
+
+/* ---------- utilidades ---------- */
+function normalize(s){
+  return (s || "").toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+}
+function escapeXml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function truncateLabel(s){
+  s = String(s);
+  return s.length > 16 ? s.slice(0,15) + "…" : s;
+}
+function setUserLine(t){ document.getElementById("line-user").textContent = t; }
+function setAssistantLine(t){ document.getElementById("line-assistant").textContent = t; }
+function setStatus(t){ document.getElementById("status-text").textContent = t; }
+function setBrainStatus(t, isError){
+  var el = document.getElementById("brain-status");
+  el.textContent = t || "";
+  el.className = isError ? "err" : "";
+}
+function setOrbState(state){
+  document.getElementById("orb").className = "orb " + state;
+  var defaults = { idle:"Em espera.", listening:"Ouvindo...", thinking:"Pensando...", speaking:"Falando..." };
+  setStatus(defaults[state] || "");
+}
+function isHttp(){
+  return location.protocol === "http:" || location.protocol === "https:";
+}
+function accessCode(){
+  try{ return (localStorage.getItem("kraker_code") || "").trim(); }catch(e){ return ""; }
+}
+function proxyHeaders(){
+  var h = { "content-type": "application/json" };
+  var code = accessCode();
+  if(code) h["x-kraker-code"] = code;
+  return h;
+}
+
+/* ---------- descoberta do backend ---------- */
+function probeServer(){
+  if(!isHttp()){ updateModeChip(); return Promise.resolve(); }
+  var a = fetch("/.netlify/functions/claude")
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){ if(d){ SERVER.claude = !!d.hasKey; SERVER.needsCode = !!d.needsCode; } })
+    .catch(function(){});
+  var b = fetch("/.netlify/functions/notion")
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){ if(d){ SERVER.notion = !!d.hasToken; } })
+    .catch(function(){});
+  return Promise.all([a, b]).then(updateModeChip);
+}
+function updateModeChip(){
+  var chip = document.getElementById("mode-chip");
+  var info = document.getElementById("settings-mode");
+  if(SERVER.claude){
+    chip.textContent = "🔒 chave no servidor";
+    info.textContent = "Este site usa a chave guardada no Netlify. Nada de chave no navegador.";
+    info.className = "ok";
+  }else{
+    chip.textContent = "🔑 chave no navegador";
+    info.textContent = "Sem chave no servidor: o Kraker usa a chave salva neste navegador.";
+    info.className = "";
+  }
+}
+
+/* ---------- voz: reconhecimento ---------- */
+function setupRecognition(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    setStatus("Reconhecimento de voz não é suportado neste navegador, chefe. Use o campo de texto.");
+    return;
+  }
+  recognition = new SR();
+  recognition.lang = "pt-BR";
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  recognition.onresult = function(e){
+    if(busy) return;
+    var res = e.results[e.results.length - 1];
+    if(!res.isFinal) return;
+    var transcript = ((res[0] && res[0].transcript) || "").trim();
+    if(transcript) handleTranscript(transcript);
+  };
+
+  recognition.onerror = function(e){
+    if(e.error === "not-allowed" || e.error === "service-not-allowed"){
+      wantListening = false;
+      setOrbState("idle");
+      setStatus("Permissão de microfone negada. Libere o microfone nas configurações do navegador, chefe.");
+    }
+  };
+
+  recognition.onend = function(){
+    listening = false;
+    if(wantListening && !busy){
+      startRecognitionSafe();
+    } else if(!busy){
+      setOrbState("idle");
+    }
+  };
+}
+function startRecognitionSafe(){
+  if(!recognition) return;
+  try{
+    recognition.start();
+    listening = true;
+    if(!busy) setOrbState("listening");
+  }catch(err){ /* já iniciado ou bloqueado - ignora */ }
+}
+function setBusy(v){
+  busy = v;
+  if(busy){
+    if(recognition && listening){
+      try{ recognition.stop(); }catch(e){}
+    }
+  } else if(wantListening){
+    startRecognitionSafe();
+  }
+}
+
+function handleTranscript(raw){
+  var norm = normalize(raw);
+  var wake = normalize(CONFIG.wakeWord);
+  if(!activated){
+    if(norm.indexOf(wake) !== -1){
+      activated = true;
+      setUserLine('"' + CONFIG.wakeWord + '"');
+      ttsSpeak("Diga, " + CONFIG.address + ".");
+    }
+    return;
+  }
+  activated = false;
+  processCommand(raw);
+}
+
+/* ---------- voz: síntese ---------- */
+function loadVoices(){ voicesCache = window.speechSynthesis.getVoices(); }
+function pickVoice(){
+  var pt = voicesCache.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf("pt") === 0; });
+  var pool = pt.length ? pt : voicesCache;
+  var maleHints = ["male","homem","daniel","ricardo","felipe","masc","antonio","joaquim"];
+  var femaleHints = ["female","mulher","maria","luciana","fem","camila","vitoria"];
+  var hints = CONFIG.voiceGender === "feminina" ? femaleHints : maleHints;
+  var found = pool.find(function(v){
+    var n = v.name.toLowerCase();
+    return hints.some(function(h){ return n.indexOf(h) !== -1; });
+  });
+  return found || pool[0] || null;
+}
+var ttsWatchdog = null;
+function ttsFinish(){
+  if(ttsWatchdog){ clearTimeout(ttsWatchdog); ttsWatchdog = null; }
+  setBusy(false);
+  setOrbState(wantListening ? "listening" : "idle");
+}
+function ttsSpeak(text){
+  if(!("speechSynthesis" in window)){
+    ttsFinish();
+    return;
+  }
+  window.speechSynthesis.cancel();
+  var utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "pt-BR";
+  var v = pickVoice();
+  if(v) utter.voice = v;
+  utter.rate = 1.02;
+  setBusy(true);
+  setOrbState("speaking");
+  utter.onend = ttsFinish;
+  utter.onerror = ttsFinish;
+  // Em alguns navegadores o onend nunca dispara (sem voz instalada, aba em
+  // segundo plano). Sem esta rede de segurança o busy travaria a escuta.
+  if(ttsWatchdog) clearTimeout(ttsWatchdog);
+  ttsWatchdog = setTimeout(ttsFinish, Math.max(5000, text.length * 110));
+  window.speechSynthesis.speak(utter);
+}
+
+/* ---------- cérebro: system prompt ---------- */
+function buildSystemPrompt(){
+  var order = ["meta","metas","trabalho","projetos","financas","aprendizado","saude","relacoes"];
+  var brain = "";
+  order.forEach(function(a){
+    var items = NOTES.filter(function(n){ return n.area === a; });
+    if(items.length === 0) return;
+    brain += "\n" + AREA[a].label.toUpperCase() + ":\n";
+    items.forEach(function(n){ brain += "- " + n.title + ": " + n.body + "\n"; });
+  });
+  return [
+    'Você é ' + CONFIG.name + ', um assistente de voz pessoal estilo Jarvis, com personalidade de ' + CONFIG.persona + ': educado, espirituoso, nunca engessado. Você sempre se dirige ao usuário como "' + CONFIG.address + '".',
+    'Responda SEMPRE em português do Brasil, em 2 a 4 frases curtas, em texto corrido pronto para ser falado em voz alta. Nunca use emojis, markdown, listas ou asteriscos.',
+    'Este é o SECOND BRAIN do ' + CONFIG.address + ' — use essas informações para personalizar toda resposta, citando-as quando fizer sentido:' + brain,
+    'PROTOCOLO DE MEMÓRIA VIVA: se o usuário revelar algo novo e duradouro sobre a vida dele (uma meta, um projeto, um fato de carreira, finanças, aprendizado, saúde ou relações), termine sua resposta com uma linha no formato EXATO [[SAVE:area|titulo|texto]], onde area é uma destas: metas, trabalho, projetos, financas, aprendizado, saude, relacoes, meta. Se já existir uma nota com esse título, ela será atualizada; senão, uma nova nasce. Inclua essa linha SOMENTE quando houver algo realmente novo para guardar.'
+  ].join("\n\n");
+}
+
+function upsertNote(area, title, body){
+  if(!AREA[area]) area = "meta";
+  var existing = NOTES.find(function(n){ return n.title.toLowerCase() === title.toLowerCase(); });
+  var id;
+  if(existing){
+    existing.area = area;
+    existing.body = body;
+    id = existing.id;
+  }else{
+    id = nextId();
+    NOTES.push({ id: id, area: area, title: title, body: body });
+    var hub = hubId();
+    if(hub !== null && hub !== id) REL.push([hub, id]);
+  }
+  saveNotes();
+  renderGraph();
+  flashNode(id);
+}
+
+/* ---------- cérebro: chamada à API ---------- */
+function callClaude(payload){
+  if(SERVER.claude){
+    return fetch("/.netlify/functions/claude", {
+      method: "POST",
+      headers: proxyHeaders(),
+      body: JSON.stringify(payload)
+    });
+  }
+  var key = "";
+  try{ key = (localStorage.getItem("anthropic_key") || "").trim(); }catch(e){}
+  if(!key) return Promise.resolve({ __noKey: true });
+  return fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "x-api-key": key,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+      "content-type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+}
+
+function processCommand(text){
+  if(!text) return;
+  setUserLine(text);
+  setBusy(true);
+  setOrbState("thinking");
+  history.push({ role: "user", content: text });
+  if(history.length > MAX_HISTORY) history = history.slice(-MAX_HISTORY);
+
+  callClaude({
+    model: CONFIG.model,
+    max_tokens: 400,
+    system: buildSystemPrompt(),
+    messages: history
+  }).then(function(res){
+    if(res && res.__noKey){
+      history.pop();
+      var msg = "Não encontrei sua chave de API, chefe. Abra as configurações e cole a chave da Anthropic.";
+      setAssistantLine(msg);
+      ttsSpeak(msg);
+      return null;
+    }
+    if(!res.ok){
+      history.pop();
+      return res.json().catch(function(){ return {}; }).then(function(err){
+        var msg;
+        if(err && err.code === "BAD_CODE"){
+          msg = "O código de acesso deste site está errado, chefe. Confira nas configurações.";
+        }else if(err && err.code === "NO_SERVER_KEY"){
+          msg = "O servidor está sem chave configurada, chefe. Defina a variável no painel do Netlify.";
+        }else{
+          msg = "Deu erro na chamada da API, chefe. Confira se a chave está correta.";
+        }
+        setAssistantLine(msg);
+        ttsSpeak(msg);
+        return null;
+      });
+    }
+    return res.json();
+  }).then(function(data){
+    if(!data) return;
+    var out = (data.content && data.content[0] && data.content[0].text) ? data.content[0].text : "";
+    if(!out.trim()){
+      out = "Não recebi nenhuma resposta, chefe. Pode repetir, por favor?";
+    }
+    history.push({ role: "assistant", content: out });
+    if(history.length > MAX_HISTORY) history = history.slice(-MAX_HISTORY);
+
+    var saveRegex = /\[\[SAVE:([a-z_]+)\|([^|]+)\|([\s\S]+?)\]\]/;
+    var m = out.match(saveRegex);
+    var clean = out;
+    if(m){
+      upsertNote(m[1], m[2].trim(), m[3].trim());
+      clean = out.replace(saveRegex, "").trim();
+      setBrainStatus("Nota \"" + m[2].trim() + "\" guardada no Second Brain.");
+    }
+    setAssistantLine(clean);
+    ttsSpeak(clean);
+  }).catch(function(){
+    if(history.length && history[history.length - 1].role === "user") history.pop();
+    var netMsg = "Não consegui conectar com o servidor, chefe. Verifique sua internet.";
+    setAssistantLine(netMsg);
+    ttsSpeak(netMsg);
+  });
+}
+
+/* ---------- import / export ---------- */
+function notesToMarkdown(){
+  var order = ["meta","metas","trabalho","projetos","financas","aprendizado","saude","relacoes"];
+  var out = "# Second Brain · " + CONFIG.name + "\n\n";
+  order.forEach(function(a){
+    var items = NOTES.filter(function(n){ return n.area === a; });
+    if(!items.length) return;
+    out += "## " + AREA[a].label + "\n\n";
+    items.forEach(function(n){ out += "### " + n.title + "\n" + n.body + "\n\n"; });
+  });
+  return out;
+}
+function downloadFile(filename, content, mime){
+  var blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+}
+/**
+ * Funde notas vindas de fora (arquivo ou Notion) com as locais.
+ * Casamento por título: mesma nota é atualizada, nota inédita nasce.
+ */
+function importPayload(parsed){
+  var incoming = Array.isArray(parsed) ? parsed : (parsed && parsed.notes);
+  if(!Array.isArray(incoming)) return null;
+
+  var idMap = {};
+  var added = 0, merged = 0;
+  incoming.forEach(function(item){
+    if(!item || !item.title) return;
+    var title = String(item.title).trim();
+    if(!title) return;
+    var area = (item.area && AREA[item.area]) ? item.area : "meta";
+    var body = String(item.body || "");
+    var existing = NOTES.find(function(n){ return n.title.toLowerCase() === title.toLowerCase(); });
+    if(existing){
+      if(body) existing.body = body;
+      existing.area = area;
+      idMap[item.id] = existing.id;
+      merged++;
+    }else{
+      var id = nextId();
+      NOTES.push({ id: id, area: area, title: title, body: body });
+      idMap[item.id] = id;
+      added++;
+    }
+  });
+
+  var rels = (parsed && Array.isArray(parsed.rel)) ? parsed.rel : [];
+  rels.forEach(function(p){
+    var a = idMap[p[0]], b = idMap[p[1]];
+    if(a && b && a !== b && !relExists(a, b)) REL.push([a, b]);
+  });
+
+  linkOrphans();
+  saveNotes();
+  renderGraph();
+  return { added: added, merged: merged };
+}
+function handleImportFile(file){
+  var reader = new FileReader();
+  reader.onload = function(){
+    var parsed;
+    try{
+      parsed = JSON.parse(reader.result);
+    }catch(e){
+      setBrainStatus("Não consegui ler esse arquivo: ele precisa ser o JSON exportado pelo Kraker.", true);
+      return;
+    }
+    var result = importPayload(parsed);
+    if(!result){
+      setBrainStatus("O arquivo não tem uma lista de notas válida.", true);
+      return;
+    }
+    setBrainStatus(result.added + " notas novas e " + result.merged + " atualizadas.");
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- Notion ---------- */
+function setNotionStatus(msg, isError){
+  var el = document.getElementById("notion-status");
+  el.textContent = msg || "";
+  el.className = isError ? "err" : (msg ? "ok" : "");
+}
+function notionCall(body){
+  return fetch("/.netlify/functions/notion", {
+    method: "POST",
+    headers: proxyHeaders(),
+    body: JSON.stringify(body)
+  }).then(function(res){
+    return res.json().catch(function(){ return {}; }).then(function(data){
+      return { ok: res.ok, data: data };
+    });
+  });
+}
+function notionGuard(){
+  if(!isHttp()){
+    setNotionStatus("A sincronização com o Notion só funciona com o site publicado (no Netlify).", true);
+    return false;
+  }
+  if(!SERVER.notion){
+    setNotionStatus("O servidor está sem NOTION_TOKEN. Configure a variável no painel do Netlify.", true);
+    return false;
+  }
+  return true;
+}
+function notionDbId(){
+  return document.getElementById("f-notion-db").value.trim();
+}
+function saveNotionDb(id){
+  document.getElementById("f-notion-db").value = id;
+  try{ localStorage.setItem("kraker_notion_db", id); }catch(e){}
+}
+
+/* ---------- second brain: grafo ---------- */
+function renderGraph(){
+  var container = document.getElementById("graph-container");
+  var cx = 500, cy = 270, rx = 380, ry = 195, coreR = 48;
+  var n = NOTES.length;
+  var connCount = {};
+  REL.forEach(function(pair){
+    connCount[pair[0]] = (connCount[pair[0]] || 0) + 1;
+    connCount[pair[1]] = (connCount[pair[1]] || 0) + 1;
+  });
+
+  var positions = {};
+  NOTES.forEach(function(note, i){
+    var angle = (n > 0 ? (i / n) : 0) * Math.PI * 2 - Math.PI / 2;
+    var x = cx + rx * Math.cos(angle);
+    var y = cy + ry * Math.sin(angle);
+    var c = connCount[note.id] || 0;
+    var r = Math.min(34, 14 + c * 2.4);
+    var info = AREA[note.area] || AREA.meta;
+    positions[note.id] = { x: x, y: y, r: r, color: info.color, note: note };
+  });
+
+  var edgesData = REL.filter(function(p){ return positions[p[0]] && positions[p[1]]; }).map(function(p){
+    var A = positions[p[0]], B = positions[p[1]];
+    var mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2;
+    var C = { x: mx + (cx - mx) * 0.35, y: my + (cy - my) * 0.35 };
+    return { A: A, B: B, C: C };
+  });
+
+  var svg = "";
+  svg += '<defs>';
+  svg += '<linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">' +
+         '<stop offset="0%" stop-color="#8b7cff"/><stop offset="100%" stop-color="#2dd4ff"/></linearGradient>';
+  svg += '<radialGradient id="coreGrad" cx="50%" cy="50%" r="50%">' +
+         '<stop offset="0%" stop-color="#c4b5ff"/><stop offset="55%" stop-color="#8b7cff"/><stop offset="100%" stop-color="#4b3fa0"/></radialGradient>';
+  svg += '<filter id="glow" x="-100%" y="-100%" width="300%" height="300%">' +
+         '<feGaussianBlur stdDeviation="6" result="blur"/>' +
+         '<feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  svg += '</defs>';
+
+  svg += '<g class="rays">';
+  Object.keys(positions).forEach(function(id){
+    var p = positions[id];
+    svg += '<line x1="' + cx + '" y1="' + cy + '" x2="' + p.x + '" y2="' + p.y + '" stroke="' + p.color + '" stroke-width="1" opacity="0.25"/>';
+  });
+  svg += '</g>';
+
+  svg += '<g class="edges">';
+  edgesData.forEach(function(e){
+    svg += '<path class="edge-path" d="M ' + e.A.x + ' ' + e.A.y + ' Q ' + e.C.x + ' ' + e.C.y + ' ' + e.B.x + ' ' + e.B.y + '" fill="none" stroke="url(#edgeGrad)" stroke-width="1.4" opacity="0.55" stroke-dasharray="4 6"/>';
+  });
+  svg += '</g>';
+
+  svg += '<g class="pulses">';
+  for(var i = 0; i < 12; i++){
+    svg += '<circle class="pulse" r="3" fill="#ffffff" opacity="0"/>';
+  }
+  svg += '</g>';
+
+  svg += '<circle class="core-ring" cx="' + cx + '" cy="' + cy + '" r="' + (coreR + 14) + '" fill="none" stroke="#8b7cff" stroke-width="1" opacity="0.3"/>';
+  svg += '<circle class="core" cx="' + cx + '" cy="' + cy + '" r="' + coreR + '" fill="url(#coreGrad)" filter="url(#glow)"/>';
+  svg += '<text x="' + cx + '" y="' + (cy + 9) + '" text-anchor="middle" font-size="30">🧠</text>';
+
+  svg += '<g class="nodes">';
+  Object.keys(positions).forEach(function(id, idx){
+    var p = positions[id];
+    var label = escapeXml(truncateLabel(p.note.title));
+    svg += '<g class="node" data-id="' + id + '" style="animation-delay:' + (idx * 0.15) + 's">' +
+      '<title>' + escapeXml(p.note.title + " — " + p.note.body) + '</title>' +
+      '<circle class="node-ring" cx="' + p.x + '" cy="' + p.y + '" r="' + (p.r + 7) + '" fill="none" stroke="' + p.color + '" stroke-width="1.5"/>' +
+      '<circle class="node-core" cx="' + p.x + '" cy="' + p.y + '" r="' + p.r + '" fill="' + p.color + '" filter="url(#glow)"/>' +
+      '<text x="' + p.x + '" y="' + (p.y + p.r + 16) + '" text-anchor="middle" class="node-label">' + label + '</text>' +
+    '</g>';
+  });
+  svg += '</g>';
+
+  container.innerHTML = '<svg viewBox="0 0 1000 540" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">' + svg + '</svg>';
+
+  container.querySelectorAll(".node").forEach(function(g){
+    g.addEventListener("click", function(){
+      var id = parseInt(g.getAttribute("data-id"), 10);
+      var note = NOTES.find(function(n){ return n.id === id; });
+      if(note) openEditor(note);
+    });
+  });
+
+  pulseState.edges = edgesData;
+  pulseState.els = Array.prototype.slice.call(container.querySelectorAll(".pulse"));
+  if(pulseState.synapses.length === 0 && edgesData.length > 0){
+    for(var s = 0; s < 12; s++){
+      pulseState.synapses.push({
+        edgeIdx: Math.floor(Math.random() * edgesData.length),
+        t: Math.random(),
+        speed: 0.15 + Math.random() * 0.25
+      });
+    }
+  } else {
+    pulseState.synapses.forEach(function(syn){
+      if(syn.edgeIdx >= edgesData.length) syn.edgeIdx = 0;
+    });
+  }
+
+  renderLegend();
+  updateCounters();
+}
+
+function animatePulses(ts){
+  if(lastTs == null) lastTs = ts;
+  var dt = (ts - lastTs) / 1000;
+  lastTs = ts;
+  var edges = pulseState.edges, els = pulseState.els, synapses = pulseState.synapses;
+  if(edges.length > 0){
+    synapses.forEach(function(syn, i){
+      syn.t += syn.speed * dt;
+      if(syn.t >= 1){
+        syn.t = 0;
+        syn.edgeIdx = Math.floor(Math.random() * edges.length);
+        syn.speed = 0.15 + Math.random() * 0.25;
+      }
+      var e = edges[syn.edgeIdx];
+      var t = syn.t;
+      var x = (1 - t) * (1 - t) * e.A.x + 2 * (1 - t) * t * e.C.x + t * t * e.B.x;
+      var y = (1 - t) * (1 - t) * e.A.y + 2 * (1 - t) * t * e.C.y + t * t * e.B.y;
+      var op = Math.sin(t * Math.PI);
+      var el = els[i];
+      if(el){
+        el.setAttribute("cx", x);
+        el.setAttribute("cy", y);
+        el.setAttribute("opacity", op.toFixed(2));
+      }
+    });
+  }
+  requestAnimationFrame(animatePulses);
+}
+
+function flashNode(id){
+  var el = document.querySelector('.node[data-id="' + id + '"] .node-core');
+  if(!el) return;
+  el.classList.add("flash");
+  setTimeout(function(){ el.classList.remove("flash"); }, 1600);
+}
+
+function renderLegend(){
+  var el = document.getElementById("legend");
+  var present = [];
+  NOTES.forEach(function(n){ if(present.indexOf(n.area) === -1) present.push(n.area); });
+  var html = '<div class="legend-items">';
+  present.forEach(function(a){
+    var info = AREA[a] || AREA.meta;
+    html += '<span class="legend-item"><i style="background:' + info.color + '"></i>' + info.label + '</span>';
+  });
+  html += '</div><div class="legend-ok">✓ contexto injetado em todos os comandos do ' + CONFIG.name + '</div>';
+  el.innerHTML = html;
+}
+
+function updateCounters(){
+  var areas = {};
+  NOTES.forEach(function(n){ areas[n.area] = true; });
+  document.getElementById("brain-counts").textContent =
+    NOTES.length + " notas · " + Object.keys(areas).length + " áreas";
+}
+
+/* ---------- editor de notas ---------- */
+function populateAreaSelect(){
+  var sel = document.getElementById("f-area");
+  sel.innerHTML = "";
+  Object.keys(AREA).forEach(function(key){
+    var opt = document.createElement("option");
+    opt.value = key;
+    opt.textContent = AREA[key].label;
+    sel.appendChild(opt);
+  });
+}
+function openEditor(note){
+  editingId = note ? note.id : null;
+  document.getElementById("modal-heading").textContent = note ? "Editar Nota" : "Nova Nota";
+  document.getElementById("f-title").value = note ? note.title : "";
+  document.getElementById("f-area").value = note ? note.area : "meta";
+  document.getElementById("f-body").value = note ? note.body : "";
+  document.getElementById("btn-delete").style.display = note ? "inline-block" : "none";
+  document.getElementById("note-modal").classList.remove("hidden");
+}
+function closeEditor(){
+  document.getElementById("note-modal").classList.add("hidden");
+  editingId = null;
+}
+function closeAllModals(){
+  closeEditor();
+  document.getElementById("settings-modal").classList.add("hidden");
+  document.getElementById("notion-modal").classList.add("hidden");
+}
+
+/* ---------- boot / ativação ---------- */
+function activateSystem(){
+  document.getElementById("screen-activate").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  setupRecognition();
+  wantListening = true;
+  var greeting = "Sistemas online. Estou ouvindo, " + CONFIG.address + ".";
+  setAssistantLine(greeting);
+  ttsSpeak(greeting);
+}
+
+/* ---------- init ---------- */
+document.addEventListener("DOMContentLoaded", function(){
+  populateAreaSelect();
+  loadNotesFromStorage();
+  renderGraph();
+  probeServer();
+
+  try{
+    var savedKey = localStorage.getItem("anthropic_key");
+    if(savedKey) document.getElementById("api-key").value = savedKey;
+    var savedCode = localStorage.getItem("kraker_code");
+    if(savedCode) document.getElementById("access-code").value = savedCode;
+    var savedDb = localStorage.getItem("kraker_notion_db");
+    if(savedDb) document.getElementById("f-notion-db").value = savedDb;
+  }catch(e){}
+
+  if("speechSynthesis" in window){
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+  }
+
+  setTimeout(function(){
+    document.getElementById("screen-boot").classList.add("fade-out");
+    setTimeout(function(){
+      document.getElementById("screen-boot").classList.add("hidden");
+      document.getElementById("screen-activate").classList.remove("hidden");
+    }, 650);
+  }, 2200);
+
+  document.getElementById("btn-activate").addEventListener("click", activateSystem);
+
+  /* configurações */
+  document.getElementById("btn-settings").addEventListener("click", function(){
+    document.getElementById("settings-modal").classList.remove("hidden");
+  });
+  document.getElementById("btn-settings-close").addEventListener("click", function(){
+    document.getElementById("settings-modal").classList.add("hidden");
+  });
+  document.getElementById("api-key").addEventListener("input", function(e){
+    try{ localStorage.setItem("anthropic_key", e.target.value.trim()); }catch(err){}
+  });
+  document.getElementById("access-code").addEventListener("input", function(e){
+    try{ localStorage.setItem("kraker_code", e.target.value.trim()); }catch(err){}
+  });
+
+  /* comando por texto */
+  document.getElementById("text-input").addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      var val = e.target.value.trim();
+      if(val){
+        e.target.value = "";
+        processCommand(val);
+      }
+    }
+  });
+
+  /* voz */
+  document.getElementById("btn-mic").addEventListener("click", function(){
+    if(!recognition){
+      setStatus("Reconhecimento de voz não é suportado neste navegador, chefe. Use o campo de texto.");
+      return;
+    }
+    if(wantListening){
+      wantListening = false;
+      try{ recognition.stop(); }catch(e){}
+      setOrbState("idle");
+    }else{
+      wantListening = true;
+      startRecognitionSafe();
+    }
+  });
+  document.getElementById("orb").addEventListener("click", function(){
+    if(!recognition){
+      setStatus("Reconhecimento de voz não é suportado neste navegador, chefe. Use o campo de texto.");
+      return;
+    }
+    if(!wantListening){
+      wantListening = true;
+      startRecognitionSafe();
+    }
+  });
+  document.getElementById("btn-stop").addEventListener("click", function(){
+    if("speechSynthesis" in window) window.speechSynthesis.cancel();
+    ttsFinish();
+    setStatus("Fala interrompida.");
+  });
+
+  /* second brain */
+  document.getElementById("btn-new-note").addEventListener("click", function(){ openEditor(null); });
+  document.getElementById("btn-reload").addEventListener("click", function(){
+    renderGraph();
+    setBrainStatus("");
+  });
+  document.getElementById("btn-cancel").addEventListener("click", closeEditor);
+
+  document.getElementById("btn-save").addEventListener("click", function(){
+    var title = document.getElementById("f-title").value.trim();
+    var area = document.getElementById("f-area").value;
+    var body = document.getElementById("f-body").value.trim();
+    if(!title || !body){ closeEditor(); return; }
+    if(editingId){
+      var n = NOTES.find(function(x){ return x.id === editingId; });
+      if(n){ n.title = title; n.area = area; n.body = body; }
+    }else{
+      var id = nextId();
+      NOTES.push({ id: id, area: area, title: title, body: body });
+      var hub = hubId();
+      if(hub !== null && hub !== id) REL.push([hub, id]);
+    }
+    saveNotes();
+    renderGraph();
+    closeEditor();
+  });
+
+  document.getElementById("btn-delete").addEventListener("click", function(){
+    if(editingId == null) return;
+    NOTES = NOTES.filter(function(n){ return n.id !== editingId; });
+    REL = REL.filter(function(p){ return p[0] !== editingId && p[1] !== editingId; });
+    saveNotes();
+    renderGraph();
+    closeEditor();
+  });
+
+  /* arquivos */
+  document.getElementById("btn-export").addEventListener("click", function(){
+    downloadFile("kraker-second-brain.json",
+      JSON.stringify({ notes: NOTES, rel: REL }, null, 2),
+      "application/json;charset=utf-8");
+    setBrainStatus("Backup baixado com " + NOTES.length + " notas.");
+  });
+  document.getElementById("btn-import").addEventListener("click", function(){
+    document.getElementById("file-import").click();
+  });
+  document.getElementById("file-import").addEventListener("change", function(e){
+    var file = e.target.files && e.target.files[0];
+    if(file) handleImportFile(file);
+    e.target.value = "";
+  });
+
+  /* notion */
+  document.getElementById("btn-notion").addEventListener("click", function(){
+    document.getElementById("notion-modal").classList.remove("hidden");
+    if(!isHttp()){
+      setNotionStatus("Publique o site no Netlify para usar a sincronização com o Notion.", true);
+    }else if(!SERVER.notion){
+      setNotionStatus("O servidor está sem NOTION_TOKEN. Configure a variável no painel do Netlify.", true);
+    }else{
+      setNotionStatus("");
+    }
+  });
+  document.getElementById("btn-notion-close").addEventListener("click", function(){
+    document.getElementById("notion-modal").classList.add("hidden");
+  });
+
+  document.getElementById("btn-notion-setup").addEventListener("click", function(){
+    if(!notionGuard()) return;
+    var parent = document.getElementById("f-notion-parent").value.trim();
+    if(!parent){
+      setNotionStatus("Cole primeiro o link da página do Notion.", true);
+      return;
+    }
+    setNotionStatus("Criando a base no Notion...");
+    notionCall({ action: "setup", parentPageId: parent }).then(function(r){
+      if(!r.ok){
+        setNotionStatus(r.data.error || "Não consegui criar a base.", true);
+        return;
+      }
+      saveNotionDb(r.data.databaseId);
+      setNotionStatus("Base criada. Agora é só enviar suas notas.");
+    }).catch(function(){
+      setNotionStatus("Falha de rede ao falar com o Notion.", true);
+    });
+  });
+
+  document.getElementById("btn-notion-export").addEventListener("click", function(){
+    if(!notionGuard()) return;
+    var db = notionDbId();
+    if(!db){
+      setNotionStatus("Informe o ID da base (ou crie uma acima).", true);
+      return;
+    }
+    setNotionStatus("Enviando " + NOTES.length + " notas...");
+    notionCall({ action: "export", databaseId: db, notes: NOTES }).then(function(r){
+      if(!r.ok){
+        setNotionStatus(r.data.error || "Não consegui enviar as notas.", true);
+        return;
+      }
+      saveNotionDb(db);
+      setNotionStatus(r.data.created + " criadas e " + r.data.updated + " atualizadas no Notion.");
+    }).catch(function(){
+      setNotionStatus("Falha de rede ao falar com o Notion.", true);
+    });
+  });
+
+  document.getElementById("btn-notion-import").addEventListener("click", function(){
+    if(!notionGuard()) return;
+    var db = notionDbId();
+    if(!db){
+      setNotionStatus("Informe o ID da base (ou crie uma acima).", true);
+      return;
+    }
+    setNotionStatus("Buscando notas no Notion...");
+    notionCall({ action: "import", databaseId: db }).then(function(r){
+      if(!r.ok){
+        setNotionStatus(r.data.error || "Não consegui ler a base.", true);
+        return;
+      }
+      var result = importPayload({ notes: r.data.notes });
+      saveNotionDb(db);
+      if(!result){
+        setNotionStatus("A base não devolveu notas válidas.", true);
+        return;
+      }
+      setNotionStatus(result.added + " notas novas e " + result.merged + " atualizadas.");
+      setBrainStatus("Second Brain sincronizado com o Notion.");
+    }).catch(function(){
+      setNotionStatus("Falha de rede ao falar com o Notion.", true);
+    });
+  });
+
+  document.getElementById("btn-notion-copy").addEventListener("click", function(){
+    var md = notesToMarkdown();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(md).then(function(){
+        setNotionStatus("Markdown copiado. Cole direto numa página do Notion.");
+      }).catch(function(){
+        downloadFile("kraker-second-brain.md", md, "text/markdown;charset=utf-8");
+        setNotionStatus("Não consegui copiar, então baixei o arquivo .md.");
+      });
+    }else{
+      downloadFile("kraker-second-brain.md", md, "text/markdown;charset=utf-8");
+      setNotionStatus("Arquivo .md baixado. Cole o conteúdo no Notion.");
+    }
+  });
+
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape") closeAllModals();
+  });
+
+  requestAnimationFrame(animatePulses);
+});
+
+})();
+</script>
+</body>
+</html>
