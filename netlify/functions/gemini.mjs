@@ -35,7 +35,10 @@ function toGeminiBody(payload) {
       parts: [{ text: String(m.content || "") }]
     })),
     systemInstruction: { parts: [{ text: String(payload.system || "") }] },
-    generationConfig: { maxOutputTokens: payload.max_tokens }
+    // thinkingBudget:0 desliga o raciocínio interno do modelo — sem isso, em
+    // respostas curtas o orçamento de tokens pode ser consumido todo "pensando"
+    // e a resposta falada sair vazia.
+    generationConfig: { maxOutputTokens: payload.max_tokens, thinkingConfig: { thinkingBudget: 0 } }
   };
 }
 

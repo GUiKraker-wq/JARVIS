@@ -36,9 +36,11 @@ navegador). A sincronização com o Notion não funciona sem o site publicado.
    | `NOTION_TOKEN` | só p/ Notion | token da sua integração do Notion (`ntn_...`) |
 
    A chave do Gemini se cria de graça em <https://aistudio.google.com/apikey>
-   (login com conta Google). O modelo padrão é `gemini-2.5-flash`, que entra na
-   camada gratuita; para trocar de modelo, edite `CONFIG.model` no topo do
-   `<script>` dentro de `index.html`.
+   (login com conta Google). O modelo padrão é `gemini-flash-latest` — um
+   "apelido" que o Google sempre aponta pro Flash mais atual, então não quebra
+   quando uma versão específica (tipo `gemini-2.5-flash`) é descontinuada. Pra
+   trocar de modelo, edite `CONFIG.model` no topo do `<script>` dentro de
+   `index.html`.
 
 3. Publique. O app detecta sozinho que existe chave no servidor e mostra
    **🔒 chave no servidor** no topo.
