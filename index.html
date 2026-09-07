@@ -710,6 +710,7 @@ function processCommand(text){
         msg = "Deu erro na chamada da API, chefe. Confira se a chave está correta.";
       }
       setAssistantLine(msg);
+      setBrainStatus(err.error ? ("Detalhe técnico: " + err.error) : "", true);
       ttsSpeak(msg);
       return null;
     }

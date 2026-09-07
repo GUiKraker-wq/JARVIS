@@ -88,6 +88,7 @@ export default async (req) => {
     });
     const raw = await upstream.json().catch(() => ({}));
     if (!upstream.ok) {
+      console.error("Gemini upstream error", upstream.status, raw && raw.error);
       return json({
         error: (raw.error && raw.error.message) || "O Gemini respondeu com erro."
       }, upstream.status);
