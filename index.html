@@ -166,6 +166,146 @@ html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--te
   .topbar-right{justify-content:space-between;}
   .brain-header{flex-direction:column;align-items:flex-start;}
 }
+
+/* ─────────── MÓDULOS: agenda · e-mails · notícias · digest ─────────── */
+.modules{border-top:1px solid var(--border);background:rgba(6,9,15,.45);}
+.module-tabs{display:flex;gap:6px;padding:12px 18px 0;flex-wrap:wrap;}
+.mod-tab{
+  padding:9px 16px;border-radius:10px 10px 0 0;border:1px solid var(--border);border-bottom:none;
+  background:transparent;color:var(--muted);cursor:pointer;font-size:.82rem;letter-spacing:.04em;
+  display:flex;align-items:center;gap:7px;transition:color .2s,background .2s;
+}
+.mod-tab:hover{color:var(--text);}
+.mod-tab.active{
+  color:var(--text);background:var(--panel);
+  border-color:var(--border);
+  box-shadow:inset 0 2px 0 var(--primary);
+}
+.badge{
+  background:var(--secondary);color:#fff;border-radius:999px;
+  font-size:.68rem;padding:1px 7px;min-width:18px;text-align:center;font-weight:700;
+}
+.mod-panel{
+  display:none;padding:16px 18px 20px;border-top:1px solid var(--border);
+  animation:panelIn .28s ease;
+}
+.mod-panel.active{display:block;}
+@keyframes panelIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.mod-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+.mod-title{color:var(--muted);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;}
+.mod-actions{display:flex;gap:6px;align-items:center;}
+.mod-empty{color:var(--muted);font-size:.85rem;padding:14px 0;line-height:1.6;}
+.mod-empty code{
+  background:var(--panel2);padding:2px 6px;border-radius:5px;
+  font-family:"SF Mono",Consolas,Menlo,monospace;font-size:.8rem;color:var(--primary);
+}
+.mod-error{color:var(--secondary);font-size:.82rem;padding:8px 0;line-height:1.5;}
+
+/* agenda */
+.day-group{margin-bottom:16px;}
+.day-label{
+  color:var(--primary);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);
+}
+.day-label.today{color:var(--secondary);}
+.event{
+  display:flex;gap:11px;align-items:flex-start;padding:9px 11px;margin-bottom:6px;
+  background:var(--panel2);border-radius:9px;border-left:3px solid var(--muted);
+}
+.event.next{box-shadow:0 0 0 1px var(--primary),0 0 22px rgba(30,144,255,.18);}
+.event-time{
+  color:var(--muted);font-size:.78rem;min-width:52px;
+  font-family:"SF Mono",Consolas,Menlo,monospace;padding-top:1px;
+}
+.event-main{flex:1;min-width:0;}
+.event-title{font-size:.92rem;line-height:1.35;}
+.event-meta{color:var(--muted);font-size:.74rem;margin-top:3px;}
+.countdown{color:var(--primary);font-size:.74rem;font-weight:700;white-space:nowrap;}
+
+/* e-mails */
+.bucket{margin-bottom:14px;}
+.bucket-head{
+  display:flex;align-items:center;gap:8px;font-size:.75rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:8px;cursor:pointer;
+}
+.bucket-head.acao{color:var(--primary);}
+.bucket-count{background:var(--panel2);border-radius:999px;padding:1px 8px;font-size:.7rem;}
+.mail{
+  display:flex;gap:10px;padding:9px 11px;margin-bottom:6px;background:var(--panel2);
+  border-radius:9px;border-left:3px solid var(--primary);cursor:pointer;
+}
+.mail.acao{box-shadow:inset 0 0 0 1px rgba(30,144,255,.22);}
+.mail-main{flex:1;min-width:0;}
+.mail-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline;}
+.mail-from{font-size:.85rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mail-when{color:var(--muted);font-size:.72rem;white-space:nowrap;}
+.mail-subject{font-size:.82rem;color:var(--text);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mail-resume{color:var(--muted);font-size:.79rem;margin-top:3px;line-height:1.45;}
+.mail-snippet{
+  display:none;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);
+  color:var(--muted);font-size:.78rem;line-height:1.55;white-space:pre-wrap;
+}
+.mail.open .mail-snippet{display:block;}
+.triage-tag{font-size:.7rem;color:var(--muted);margin-left:auto;}
+
+/* notícias */
+.news-topic{margin-bottom:16px;}
+.news-topic-title{
+  color:var(--primary);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;
+  margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border);
+}
+.headline{display:block;padding:8px 11px;margin-bottom:5px;background:var(--panel2);
+  border-radius:9px;text-decoration:none;color:var(--text);transition:background .18s;}
+.headline:hover{background:var(--panel);}
+.headline-title{font-size:.87rem;line-height:1.4;}
+.headline-meta{color:var(--muted);font-size:.72rem;margin-top:3px;}
+
+/* digest */
+.digest-box{
+  background:linear-gradient(160deg,rgba(30,144,255,.09),rgba(255,59,48,.06));
+  border:1px solid var(--border);border-radius:12px;padding:18px;line-height:1.7;font-size:.95rem;
+  white-space:pre-wrap;
+}
+.digest-meta{color:var(--muted);font-size:.75rem;margin-top:10px;}
+.btn-primary{
+  padding:10px 20px;border-radius:10px;border:1px solid var(--primary);
+  background:linear-gradient(90deg,rgba(30,144,255,.2),rgba(255,59,48,.16));
+  color:var(--text);cursor:pointer;font-size:.85rem;letter-spacing:.05em;
+}
+.btn-primary:hover{box-shadow:0 0 22px rgba(30,144,255,.28);}
+
+/* configuração dentro do ⚙ */
+.cfg-section{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+.cfg-section h4{margin:0 0 4px;font-size:.8rem;letter-spacing:.09em;text-transform:uppercase;color:var(--primary);}
+.cfg-row{display:flex;gap:7px;align-items:center;margin-top:8px;}
+.cfg-row input{margin-top:0;}
+.cfg-row input.cal-name{flex:0 0 32%;}
+.cfg-row input.cal-url{flex:1;min-width:0;}
+.cfg-dot{width:13px;height:13px;border-radius:50%;flex:0 0 auto;cursor:pointer;border:1px solid var(--border);}
+.cfg-del{
+  flex:0 0 auto;width:28px;height:28px;border-radius:7px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--secondary);cursor:pointer;font-size:.8rem;line-height:1;
+}
+.model-picker{display:flex;gap:7px;margin-top:8px;flex-wrap:wrap;}
+.model-opt{
+  flex:1;min-width:104px;padding:9px;border-radius:9px;border:1px solid var(--border);
+  background:var(--panel2);color:var(--muted);cursor:pointer;text-align:center;font-size:.76rem;
+}
+.model-opt.active{border-color:var(--primary);color:var(--text);box-shadow:0 0 0 1px var(--primary);}
+.model-opt small{display:block;color:var(--muted);font-size:.68rem;margin-top:3px;}
+.status-pill{
+  display:inline-block;font-size:.74rem;padding:3px 10px;border-radius:999px;
+  border:1px solid var(--border);color:var(--muted);margin-top:8px;
+}
+.status-pill.ok{color:var(--green);border-color:rgba(52,211,153,.4);}
+.status-pill.off{color:var(--secondary);border-color:rgba(255,59,48,.4);}
+
+@media (max-width:520px){
+  .cfg-row{flex-wrap:wrap;}
+  .cfg-row input.cal-name{flex:1 1 100%;}
+  .mod-tab{flex:1;justify-content:center;padding:9px 8px;font-size:.75rem;}
+}
 </style>
 </head>
 <body>
@@ -206,6 +346,58 @@ html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--te
       <button class="round-btn" id="btn-mic" title="Microfone">🎙️</button>
       <input id="text-input" type="text" placeholder="ou digite e tecle Enter">
       <button class="round-btn" id="btn-stop" title="Interromper fala">⏹</button>
+    </div>
+  </div>
+
+  <div class="modules" id="modules">
+    <div class="module-tabs">
+      <button class="mod-tab active" data-panel="agenda">📅 AGENDA</button>
+      <button class="mod-tab" data-panel="emails">📧 E-MAILS<span id="badge-acao" class="badge hidden">0</span></button>
+      <button class="mod-tab" data-panel="news">📰 NOTÍCIAS</button>
+      <button class="mod-tab" data-panel="digest">☀️ DIGEST</button>
+    </div>
+
+    <div class="mod-panel active" id="panel-agenda">
+      <div class="mod-head">
+        <span class="mod-title">Timeline · hoje + 7 dias</span>
+        <div class="mod-actions">
+          <span id="agenda-when" class="mod-title"></span>
+          <button class="icon-btn" id="btn-cal-refresh" title="Atualizar agenda">↻</button>
+        </div>
+      </div>
+      <div id="agenda-body"></div>
+    </div>
+
+    <div class="mod-panel" id="panel-emails">
+      <div class="mod-head">
+        <span class="mod-title">Caixa de entrada · triagem</span>
+        <div class="mod-actions">
+          <span id="emails-when" class="mod-title"></span>
+          <button class="icon-btn" id="btn-mail-refresh" title="Buscar e-mails">↻</button>
+        </div>
+      </div>
+      <div id="emails-body"></div>
+    </div>
+
+    <div class="mod-panel" id="panel-news">
+      <div class="mod-head">
+        <span class="mod-title">Radar · manchetes por tópico</span>
+        <div class="mod-actions">
+          <span id="news-when" class="mod-title"></span>
+          <button class="icon-btn" id="btn-news-refresh" title="Atualizar notícias">↻</button>
+        </div>
+      </div>
+      <div id="news-body"></div>
+    </div>
+
+    <div class="mod-panel" id="panel-digest">
+      <div class="mod-head">
+        <span class="mod-title">Resumo do dia</span>
+        <div class="mod-actions">
+          <button class="btn-primary" id="btn-digest">☀️ GERAR DIGEST</button>
+        </div>
+      </div>
+      <div id="digest-body"></div>
     </div>
   </div>
 
@@ -259,6 +451,51 @@ html,body{margin:0;padding:0;min-height:100%;background:var(--bg);color:var(--te
       com a variável GEMINI_API_KEY configurada, a chave fica no servidor e este campo pode ficar vazio.</p>
     <label>Código de acesso (se o site estiver protegido)</label>
     <input id="access-code" type="password" placeholder="opcional">
+
+    <div class="cfg-section">
+      <h4>Nível do cérebro</h4>
+      <p class="hint">Troca o modelo do Gemini usado em todas as respostas.</p>
+      <div class="model-picker" id="model-picker"></div>
+    </div>
+
+    <div class="cfg-section">
+      <h4>📅 Agendas</h4>
+      <p class="hint">Google Agenda no computador → ⚙ Configurações → clique na agenda na
+        lista à esquerda → <b>Integrar agenda</b> → copie o <b>Endereço secreto em formato iCal</b>.</p>
+      <div id="cal-list"></div>
+      <button class="btn-inline" id="btn-add-cal">+ adicionar agenda</button>
+      <p class="hint">⚠️ Esse link dá acesso de leitura à sua agenda. Ele fica salvo só neste
+        navegador e nunca é enviado para a IA.</p>
+    </div>
+
+    <div class="cfg-section">
+      <h4>📧 E-mail</h4>
+      <p class="hint">A senha de app fica no servidor (variáveis <code>GMAIL_USER</code> e
+        <code>GMAIL_APP_PASSWORD</code> no Netlify) — nunca neste navegador.
+        Para gerar: (1) ative a verificação em 2 etapas em myaccount.google.com/security,
+        (2) crie um app "Kraker" em myaccount.google.com/apppasswords, (3) copie a senha de 16 letras.</p>
+      <div id="mail-status"></div>
+      <label>E-mails analisados por atualização</label>
+      <input id="f-mail-count" type="number" min="5" max="40" value="20">
+      <p class="hint">O Kraker só LÊ: nunca envia, responde, apaga ou marca nada. Para a triagem,
+        remetente, assunto e um trecho vão para a API do Gemini.</p>
+    </div>
+
+    <div class="cfg-section">
+      <h4>📰 Tópicos de notícias</h4>
+      <div id="topic-list"></div>
+      <button class="btn-inline" id="btn-add-topic">+ adicionar tópico</button>
+      <label>Manchetes por tópico</label>
+      <input id="f-news-count" type="number" min="1" max="10" value="5">
+    </div>
+
+    <div class="cfg-section">
+      <h4>☀️ Digest</h4>
+      <label>Cidade para a previsão do tempo</label>
+      <input id="f-city" type="text" placeholder="São Paulo">
+      <p class="hint">Clima via Open-Meteo, gratuito e sem chave.</p>
+    </div>
+
     <div class="modal-actions">
       <button id="btn-settings-close">Fechar</button>
     </div>
@@ -1310,6 +1547,1143 @@ document.addEventListener("DOMContentLoaded", function(){
   });
 
   requestAnimationFrame(animatePulses);
+});
+
+/* ════════════════════════════════════════════════════════════════════
+   UPGRADE · AGENDA · E-MAILS · NOTÍCIAS · MORNING DIGEST
+
+   Tudo daqui pra baixo ADICIONA comportamento. As funções da Parte 1
+   (processCommand, buildSystemPrompt, ttsSpeak, reconhecimento de voz)
+   são ENVELOPADAS, nunca reescritas.
+   ════════════════════════════════════════════════════════════════════ */
+
+var MODEL_LEVELS = [
+  { id: "economico",   label: "ECONÔMICO",   model: "gemini-flash-lite-latest", hint: "rápido e barato" },
+  { id: "equilibrado", label: "EQUILIBRADO", model: "gemini-flash-latest",      hint: "meio-termo" },
+  { id: "maximo",      label: "MÁXIMO",      model: "gemini-pro-latest",        hint: "o mais afiado" }
+];
+var CAL_PALETTE = ["#1e90ff", "#ff3b30", "#8b7cff", "#ec4899", "#10b981", "#fbbf24"];
+var DEFAULT_TOPICS = [
+  { label: "Gestão e Liderança",      query: "gestão empresarial liderança" },
+  { label: "EdTech e Educação",       query: "edtech educação tecnologia ensino" },
+  { label: "Inteligência Artificial", query: "inteligência artificial" },
+  { label: "Economia e Câmbio",       query: "economia brasileira dólar câmbio" },
+  { label: "Direito",                 query: "direito jurídico STF" },
+  { label: "Relações Internacionais", query: "relações internacionais geopolítica" }
+];
+var WEEKDAYS = ["DOMINGO","SEGUNDA","TERÇA","QUARTA","QUINTA","SEXTA","SÁBADO"];
+var DAY_MS = 86400000;
+var WINDOW_DAYS = 8;
+
+var MOD = {
+  calendars: [],
+  topics: [],
+  mailCount: 20,
+  newsCount: 5,
+  city: "São Paulo",
+  tz: "America/Sao_Paulo",
+  events: [],
+  emails: [],
+  news: [],
+  errors: { cal: "", mail: "", news: "" },
+  stamps: { cal: 0, mail: 0, news: 0 },
+  loading: { cal: false, mail: false, news: false },
+  triageMode: ""
+};
+
+/* ---------- armazenamento ---------- */
+function loadJSON(key, fallback){
+  try{
+    var raw = localStorage.getItem(key);
+    if(!raw) return fallback;
+    var parsed = JSON.parse(raw);
+    return (parsed === null || parsed === undefined) ? fallback : parsed;
+  }catch(e){ return fallback; }
+}
+function saveJSON(key, value){
+  try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){}
+}
+
+function loadModuleConfig(){
+  MOD.calendars = loadJSON("jarvis_calendars", []);
+  MOD.topics = loadJSON("jarvis_news_topics", null) || DEFAULT_TOPICS.slice();
+  var prefs = loadJSON("jarvis_module_prefs", {});
+  MOD.mailCount = prefs.mailCount || 20;
+  MOD.newsCount = prefs.newsCount || 5;
+  MOD.city = prefs.city || "São Paulo";
+  try{
+    MOD.tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "America/Sao_Paulo";
+  }catch(e){ MOD.tz = "America/Sao_Paulo"; }
+}
+function saveModuleConfig(){
+  saveJSON("jarvis_calendars", MOD.calendars);
+  saveJSON("jarvis_news_topics", MOD.topics);
+  saveJSON("jarvis_module_prefs", {
+    mailCount: MOD.mailCount, newsCount: MOD.newsCount, city: MOD.city
+  });
+}
+
+/* ---------- utilidades de data ---------- */
+function pad2(n){ return (n < 10 ? "0" : "") + n; }
+function hhmm(date){ return pad2(date.getHours()) + ":" + pad2(date.getMinutes()); }
+function dayKey(date){
+  return date.getFullYear() + "-" + pad2(date.getMonth() + 1) + "-" + pad2(date.getDate());
+}
+function startOfToday(){
+  var d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+function dayLabel(date){
+  var today = startOfToday();
+  var diff = Math.round((new Date(date.getFullYear(), date.getMonth(), date.getDate()) - today) / DAY_MS);
+  if(diff === 0) return "HOJE";
+  if(diff === 1) return "AMANHÃ";
+  return WEEKDAYS[date.getDay()] + " · " + pad2(date.getDate()) + "/" + pad2(date.getMonth() + 1);
+}
+function relativeTime(ms){
+  var diff = Date.now() - ms;
+  if(diff < 0) diff = 0;
+  var min = Math.round(diff / 60000);
+  if(min < 1) return "agora";
+  if(min < 60) return "há " + min + " min";
+  var h = Math.round(min / 60);
+  if(h < 24) return "há " + h + " h";
+  return "há " + Math.round(h / 24) + " d";
+}
+function humanCountdown(date){
+  var diff = date.getTime() - Date.now();
+  if(diff <= 0) return "agora";
+  var min = Math.round(diff / 60000);
+  if(min < 60) return "em " + min + " min";
+  var h = Math.floor(min / 60);
+  var rest = min % 60;
+  if(h < 24) return "em " + h + "h" + (rest ? " " + rest + "min" : "");
+  return "em " + Math.round(h / 24) + " dias";
+}
+
+/**
+ * Offset de um fuso IANA, em minutos, usando só o Intl nativo.
+ * Aproximação boa: o erro só apareceria exatamente na virada do horário de
+ * verão — e o Brasil não usa mais horário de verão.
+ */
+function tzOffsetMinutes(tzid, utcMs){
+  try{
+    var dtf = new Intl.DateTimeFormat("en-US", { timeZone: tzid, timeZoneName: "longOffset" });
+    var name = "";
+    dtf.formatToParts(new Date(utcMs)).forEach(function(p){
+      if(p.type === "timeZoneName") name = p.value;
+    });
+    var m = name.match(/GMT([+-])(\d{1,2}):?(\d{2})?/);
+    if(!m) return 0;
+    return (m[1] === "-" ? -1 : 1) * (parseInt(m[2], 10) * 60 + parseInt(m[3] || "0", 10));
+  }catch(e){ return 0; }
+}
+
+/* ---------- parser ICS ---------- */
+function icsUnfold(text){
+  return String(text).replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n[ \t]/g, "");
+}
+function icsUnescape(value){
+  return String(value)
+    .replace(/\\n/gi, " ")
+    .replace(/\\,/g, ",")
+    .replace(/\\;/g, ";")
+    .replace(/\\\\/g, "\\")
+    .trim();
+}
+/** Aceita os 3 formatos: com TZID, em UTC (sufixo Z) e dia inteiro. */
+function icsDate(value, params){
+  var m = String(value).trim().match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
+  if(!m) return null;
+  var y = +m[1], mo = +m[2] - 1, d = +m[3];
+  if(!m[4]) return { date: new Date(y, mo, d), allDay: true };
+  var h = +m[4], mi = +m[5], s = +m[6];
+  if(m[7]) return { date: new Date(Date.UTC(y, mo, d, h, mi, s)), allDay: false };
+  if(params && params.TZID){
+    var utcGuess = Date.UTC(y, mo, d, h, mi, s);
+    var off = tzOffsetMinutes(params.TZID, utcGuess);
+    return { date: new Date(utcGuess - off * 60000), allDay: false };
+  }
+  return { date: new Date(y, mo, d, h, mi, s), allDay: false };
+}
+function parseLineParams(rawKey){
+  var parts = rawKey.split(";");
+  var params = {};
+  for(var i = 1; i < parts.length; i++){
+    var eq = parts[i].indexOf("=");
+    if(eq > 0) params[parts[i].slice(0, eq).toUpperCase()] = parts[i].slice(eq + 1).replace(/"/g, "");
+  }
+  return { name: parts[0].toUpperCase(), params: params };
+}
+
+function parseICS(text, calendar){
+  var events = [];
+  var lines = icsUnfold(text).split("\n");
+  var current = null;
+
+  for(var i = 0; i < lines.length; i++){
+    var line = lines[i];
+    if(line === "BEGIN:VEVENT"){ current = { exdates: {} }; continue; }
+    if(line === "END:VEVENT"){
+      if(current && current.start){
+        current.calendar = calendar;
+        events.push(current);
+      }
+      current = null;
+      continue;
+    }
+    if(!current) continue;
+
+    var colon = line.indexOf(":");
+    if(colon === -1) continue;
+    var head = parseLineParams(line.slice(0, colon));
+    var value = line.slice(colon + 1);
+
+    if(head.name === "SUMMARY") current.summary = icsUnescape(value);
+    else if(head.name === "LOCATION") current.location = icsUnescape(value);
+    else if(head.name === "DTSTART"){
+      var st = icsDate(value, head.params);
+      if(st){ current.start = st.date; current.allDay = st.allDay; }
+    }
+    else if(head.name === "DTEND"){
+      var en = icsDate(value, head.params);
+      if(en) current.end = en.date;
+    }
+    else if(head.name === "RRULE") current.rrule = value;
+    else if(head.name === "EXDATE"){
+      value.split(",").forEach(function(part){
+        var ex = icsDate(part, head.params);
+        if(ex) current.exdates[dayKey(ex.date) + " " + hhmm(ex.date)] = true;
+      });
+    }
+  }
+  return events;
+}
+
+/** Expande RRULE (DAILY/WEEKLY/MONTHLY/YEARLY) dentro da janela exibida. */
+function expandEvent(ev, from, to){
+  var out = [];
+  var duration = ev.end ? (ev.end.getTime() - ev.start.getTime())
+                        : (ev.allDay ? DAY_MS : 3600000);
+
+  function emit(date){
+    var t = date.getTime();
+    if(ev.exdates[dayKey(date) + " " + hhmm(date)]) return;
+    if(t + duration < from || t > to) return;
+    out.push({
+      summary: ev.summary || "(sem título)",
+      location: ev.location || "",
+      start: new Date(t),
+      end: new Date(t + duration),
+      allDay: !!ev.allDay,
+      calendar: ev.calendar
+    });
+  }
+
+  if(!ev.rrule){ emit(ev.start); return out; }
+
+  var rule = {};
+  String(ev.rrule).split(";").forEach(function(p){
+    var eq = p.indexOf("=");
+    if(eq > 0) rule[p.slice(0, eq).toUpperCase()] = p.slice(eq + 1);
+  });
+  var freq = String(rule.FREQ || "").toUpperCase();
+  var interval = Math.max(1, parseInt(rule.INTERVAL || "1", 10));
+  var count = rule.COUNT ? parseInt(rule.COUNT, 10) : null;
+  var untilMs = null;
+  if(rule.UNTIL){
+    var u = icsDate(rule.UNTIL, {});
+    if(u) untilMs = u.date.getTime();
+  }
+  var byday = rule.BYDAY
+    ? rule.BYDAY.split(",").map(function(d){ return d.replace(/^[-+]?\d+/, "").toUpperCase(); })
+    : null;
+  var CODES = ["SU","MO","TU","WE","TH","FR","SA"];
+
+  var cursor = new Date(ev.start.getTime());
+  var emitted = 0;
+  var guard = 0;
+
+  while(guard++ < 800){
+    if(cursor.getTime() > to) break;
+    if(untilMs && cursor.getTime() > untilMs) break;
+    if(count !== null && emitted >= count) break;
+
+    var candidates = [];
+    if(freq === "WEEKLY" && byday && byday.length){
+      var weekStart = new Date(cursor.getTime());
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      byday.forEach(function(code){
+        var idx = CODES.indexOf(code);
+        if(idx === -1) return;
+        var d = new Date(weekStart.getTime());
+        d.setDate(weekStart.getDate() + idx);
+        d.setHours(ev.start.getHours(), ev.start.getMinutes(), ev.start.getSeconds(), 0);
+        if(d.getTime() >= ev.start.getTime()) candidates.push(d);
+      });
+      candidates.sort(function(a, b){ return a - b; });
+    }else{
+      candidates.push(new Date(cursor.getTime()));
+    }
+
+    for(var c = 0; c < candidates.length; c++){
+      if(count !== null && emitted >= count) break;
+      var cand = candidates[c];
+      if(untilMs && cand.getTime() > untilMs) continue;
+      emitted++;
+      emit(cand);
+    }
+
+    if(freq === "DAILY") cursor.setDate(cursor.getDate() + interval);
+    else if(freq === "WEEKLY") cursor.setDate(cursor.getDate() + 7 * interval);
+    else if(freq === "MONTHLY") cursor.setMonth(cursor.getMonth() + interval);
+    else if(freq === "YEARLY") cursor.setFullYear(cursor.getFullYear() + interval);
+    else break;
+  }
+  return out;
+}
+
+/* ---------- chamadas às antenas ---------- */
+function moduleFetch(name, body){
+  if(!isHttp()){
+    return Promise.resolve({
+      ok: false,
+      data: { error: "Este módulo precisa do site publicado — abra pelo endereço do Netlify." }
+    });
+  }
+  return fetch("/.netlify/functions/" + name, {
+    method: "POST",
+    headers: proxyHeaders(),
+    body: JSON.stringify(body || {})
+  }).then(function(res){
+    return res.json().catch(function(){ return {}; }).then(function(data){
+      return { ok: res.ok, data: data };
+    });
+  }).catch(function(){
+    return { ok: false, data: { error: "Não consegui falar com a antena." } };
+  });
+}
+
+/* ---------- AGENDA ---------- */
+function refreshCalendars(){
+  var configured = MOD.calendars.filter(function(c){ return c.url && c.url.trim(); });
+  if(configured.length === 0){
+    MOD.events = [];
+    MOD.errors.cal = "";
+    renderAgenda();
+    return Promise.resolve();
+  }
+  MOD.loading.cal = true;
+  renderAgenda();
+
+  return moduleFetch("calendar", { urls: configured.map(function(c){ return c.url.trim(); }) })
+    .then(function(res){
+      MOD.loading.cal = false;
+      if(!res.ok){
+        MOD.errors.cal = res.data.error || "Falha ao buscar as agendas.";
+        renderAgenda();
+        return;
+      }
+      var from = startOfToday().getTime();
+      var to = from + WINDOW_DAYS * DAY_MS;
+      var all = [];
+      var problems = [];
+
+      res.data.results.forEach(function(item){
+        var meta = configured[item.index];
+        if(!item.ok){
+          problems.push((meta ? meta.name : "Agenda") + ": " + item.error);
+          return;
+        }
+        try{
+          parseICS(item.ics, meta).forEach(function(ev){
+            all = all.concat(expandEvent(ev, from, to));
+          });
+        }catch(e){
+          problems.push((meta ? meta.name : "Agenda") + ": não consegui interpretar o calendário.");
+        }
+      });
+
+      all.sort(function(a, b){ return a.start - b.start; });
+      MOD.events = all;
+      MOD.errors.cal = problems.join(" · ");
+      MOD.stamps.cal = Date.now();
+      renderAgenda();
+    });
+}
+
+function todayEvents(){
+  var key = dayKey(new Date());
+  return MOD.events.filter(function(e){ return dayKey(e.start) === key; });
+}
+function nextEvent(){
+  var now = Date.now();
+  for(var i = 0; i < MOD.events.length; i++){
+    if(MOD.events[i].start.getTime() > now) return MOD.events[i];
+  }
+  return null;
+}
+
+function renderAgenda(){
+  var box = document.getElementById("agenda-body");
+  var when = document.getElementById("agenda-when");
+  when.textContent = MOD.stamps.cal ? relativeTime(MOD.stamps.cal) : "";
+
+  if(MOD.loading.cal){ box.innerHTML = '<div class="mod-empty">Buscando suas agendas...</div>'; return; }
+
+  var configured = MOD.calendars.filter(function(c){ return c.url && c.url.trim(); });
+  if(configured.length === 0){
+    box.innerHTML = '<div class="mod-empty">Nenhuma agenda conectada ainda.<br>' +
+      'Abra o <b>⚙</b> e cole o <b>endereço secreto em formato iCal</b> das suas agendas do Google.</div>';
+    return;
+  }
+
+  var html = "";
+  if(MOD.errors.cal) html += '<div class="mod-error">' + escapeXml(MOD.errors.cal) + "</div>";
+
+  if(MOD.events.length === 0){
+    html += '<div class="mod-empty">Nenhum compromisso nos próximos 7 dias, chefe.</div>';
+    box.innerHTML = html;
+    return;
+  }
+
+  var next = nextEvent();
+  var groups = {};
+  var order = [];
+  MOD.events.forEach(function(ev){
+    var key = dayKey(ev.start);
+    if(!groups[key]){ groups[key] = []; order.push(key); }
+    groups[key].push(ev);
+  });
+
+  var todayKey = dayKey(new Date());
+  order.forEach(function(key){
+    var first = groups[key][0].start;
+    html += '<div class="day-group"><div class="day-label' + (key === todayKey ? " today" : "") + '">' +
+      escapeXml(dayLabel(first)) + "</div>";
+    groups[key].forEach(function(ev){
+      var color = (ev.calendar && ev.calendar.color) || "#8a90a6";
+      var isNext = next && ev.start.getTime() === next.start.getTime() && ev.summary === next.summary;
+      html += '<div class="event' + (isNext ? " next" : "") + '" style="border-left-color:' + color + '">' +
+        '<div class="event-time">' + (ev.allDay ? "DIA<br>TODO" : escapeXml(hhmm(ev.start))) + "</div>" +
+        '<div class="event-main"><div class="event-title">' + escapeXml(ev.summary) + "</div>" +
+        '<div class="event-meta">' + escapeXml((ev.calendar && ev.calendar.name) || "Agenda") +
+        (ev.location ? " · " + escapeXml(ev.location) : "") + "</div></div>" +
+        (isNext ? '<div class="countdown">' + escapeXml(humanCountdown(ev.start)) + "</div>" : "") +
+        "</div>";
+    });
+    html += "</div>";
+  });
+  box.innerHTML = html;
+}
+
+/* ---------- E-MAILS ---------- */
+function heuristicBucket(mail){
+  var text = normalize((mail.from || "") + " " + (mail.subject || "") + " " + (mail.snippet || ""));
+  if(/noreply|no-reply|nao-responda|newsletter|unsubscribe|descadastr|promo|oferta|desconto|cupom|black friday/.test(text)){
+    return "ruido";
+  }
+  if(/\?|prazo|urgente|ate hoje|ate amanha|reuniao|fatura|boleto|vencimento|por favor|pode confirmar|aguardo|assinatura pendente|responda/.test(text)){
+    return "acao";
+  }
+  return "info";
+}
+
+function applyTriage(list){
+  var cache = loadJSON("jarvis_email_triage", {});
+  list.forEach(function(mail){
+    var hit = cache[mail.id];
+    if(hit){
+      mail.balde = hit.balde;
+      mail.resumo = hit.resumo;
+    }else{
+      mail.balde = heuristicBucket(mail);
+      mail.resumo = "";
+    }
+  });
+}
+
+/** UMA chamada por lote, só com e-mails inéditos. Já triado nunca volta pra IA. */
+function triageNewEmails(list){
+  var cache = loadJSON("jarvis_email_triage", {});
+  var pending = list.filter(function(m){ return !cache[m.id]; });
+  if(pending.length === 0){
+    MOD.triageMode = "cache";
+    return Promise.resolve();
+  }
+
+  var compact = pending.map(function(m, i){
+    return (i + 1) + ") id=" + m.id +
+      " | de: " + (m.from || "") +
+      " | assunto: " + (m.subject || "") +
+      " | trecho: " + String(m.snippet || "").slice(0, 200);
+  }).join("\n");
+
+  var system = "Você tria e-mails em três baldes e responde SOMENTE com JSON válido, sem markdown.\n" +
+    "AÇÃO (acao) = pede resposta, tarefa, decisão ou tem prazo: alguém esperando o usuário.\n" +
+    "INFO (info) = vale saber, mas não exige nada: confirmação, recibo, atualização.\n" +
+    "RUÍDO (ruido) = promoção, newsletter, notificação automática: pode ignorar.\n" +
+    'Formato exato: [{"id":"...","balde":"acao|info|ruido","resumo":"uma frase curta em português"}]';
+
+  return askAI(system, "Trie estes e-mails:\n\n" + compact, 900).then(function(answer){
+    if(!answer){
+      MOD.triageMode = "local";
+      return;
+    }
+    try{
+      var clean = answer.replace(/```json/gi, "").replace(/```/g, "").trim();
+      var start = clean.indexOf("[");
+      var end = clean.lastIndexOf("]");
+      if(start === -1 || end === -1) throw new Error("sem json");
+      var parsed = JSON.parse(clean.slice(start, end + 1));
+      parsed.forEach(function(row){
+        if(!row || !row.id) return;
+        var balde = ["acao", "info", "ruido"].indexOf(row.balde) !== -1 ? row.balde : "info";
+        cache[row.id] = { balde: balde, resumo: String(row.resumo || "").trim() };
+      });
+      saveJSON("jarvis_email_triage", cache);
+      MOD.triageMode = "ia";
+    }catch(e){
+      MOD.triageMode = "local";
+    }
+  });
+}
+
+function refreshEmails(){
+  MOD.loading.mail = true;
+  renderEmails();
+  return moduleFetch("emails", { count: MOD.mailCount }).then(function(res){
+    MOD.loading.mail = false;
+    if(!res.ok){
+      MOD.errors.mail = res.data.error || "Falha ao ler a caixa de entrada.";
+      renderEmails();
+      return;
+    }
+    MOD.errors.mail = "";
+    MOD.emails = res.data.messages || [];
+    MOD.stamps.mail = Date.now();
+    return triageNewEmails(MOD.emails).then(function(){
+      applyTriage(MOD.emails);
+      renderEmails();
+      updateActionBadge();
+    });
+  });
+}
+
+function actionEmails(){
+  return MOD.emails.filter(function(m){ return m.balde === "acao"; });
+}
+function updateActionBadge(){
+  var badge = document.getElementById("badge-acao");
+  var n = actionEmails().length;
+  badge.textContent = n;
+  badge.classList.toggle("hidden", n === 0);
+}
+
+function mailDateMs(mail){
+  var t = Date.parse(mail.date || "");
+  return isNaN(t) ? Date.now() : t;
+}
+
+function renderEmails(){
+  var box = document.getElementById("emails-body");
+  var when = document.getElementById("emails-when");
+  when.textContent = MOD.stamps.mail ? relativeTime(MOD.stamps.mail) : "";
+
+  if(MOD.loading.mail){ box.innerHTML = '<div class="mod-empty">Lendo a caixa de entrada...</div>'; return; }
+  if(MOD.errors.mail){
+    box.innerHTML = '<div class="mod-error">' + escapeXml(MOD.errors.mail) + "</div>";
+    return;
+  }
+  if(MOD.emails.length === 0){
+    box.innerHTML = '<div class="mod-empty">Clique em <b>↻</b> para buscar seus e-mails.<br>' +
+      "A conta é configurada no servidor (Netlify) — veja o passo a passo no <b>⚙</b>.</div>";
+    return;
+  }
+
+  var buckets = [
+    { id: "acao",  label: "⚡ Ação",  cls: "acao" },
+    { id: "info",  label: "Info",     cls: "" },
+    { id: "ruido", label: "Ruído",    cls: "" }
+  ];
+  var html = "";
+  if(MOD.triageMode === "local"){
+    html += '<div class="mod-empty" style="padding-top:0">Triagem local (sem IA neste lote).</div>';
+  }
+
+  buckets.forEach(function(bucket){
+    var list = MOD.emails.filter(function(m){ return m.balde === bucket.id; });
+    if(list.length === 0) return;
+    var collapsed = bucket.id === "ruido";
+    html += '<div class="bucket"><div class="bucket-head ' + bucket.cls + '" data-bucket="' + bucket.id + '">' +
+      escapeXml(bucket.label) + '<span class="bucket-count">' + list.length + "</span>" +
+      (collapsed ? "<span style='font-size:.7rem'>▸ mostrar</span>" : "") + "</div>";
+    html += '<div class="bucket-items" data-items="' + bucket.id + '"' +
+      (collapsed ? ' style="display:none"' : "") + ">";
+    list.forEach(function(mail){
+      var color = mail.balde === "acao" ? "var(--primary)" : "var(--muted)";
+      html += '<div class="mail ' + (mail.balde === "acao" ? "acao" : "") + '" style="border-left-color:' + color + '">' +
+        '<div class="mail-main">' +
+          '<div class="mail-top"><span class="mail-from">' + escapeXml(mail.from || mail.fromAddress || "") + "</span>" +
+          '<span class="mail-when">' + escapeXml(relativeTime(mailDateMs(mail))) + "</span></div>" +
+          '<div class="mail-subject">' + escapeXml(mail.subject || "") + "</div>" +
+          (mail.resumo ? '<div class="mail-resume">' + escapeXml(mail.resumo) + "</div>" : "") +
+          '<div class="mail-snippet">' + escapeXml(mail.snippet || "(sem prévia)") + "</div>" +
+        "</div></div>";
+    });
+    html += "</div></div>";
+  });
+
+  box.innerHTML = html;
+
+  box.querySelectorAll(".mail").forEach(function(el){
+    el.addEventListener("click", function(){ el.classList.toggle("open"); });
+  });
+  box.querySelectorAll(".bucket-head").forEach(function(el){
+    el.addEventListener("click", function(){
+      var items = box.querySelector('[data-items="' + el.getAttribute("data-bucket") + '"]');
+      if(items) items.style.display = items.style.display === "none" ? "" : "none";
+    });
+  });
+}
+
+/* ---------- NOTÍCIAS ---------- */
+function refreshNews(){
+  if(MOD.topics.length === 0){
+    MOD.news = [];
+    renderNews();
+    return Promise.resolve();
+  }
+  MOD.loading.news = true;
+  renderNews();
+  return moduleFetch("news", { topics: MOD.topics, count: MOD.newsCount }).then(function(res){
+    MOD.loading.news = false;
+    if(!res.ok){
+      MOD.errors.news = res.data.error || "Falha ao buscar as notícias.";
+      renderNews();
+      return;
+    }
+    MOD.errors.news = "";
+    MOD.news = res.data.results || [];
+    MOD.stamps.news = Date.now();
+    saveJSON("jarvis_news_cache", { at: MOD.stamps.news, results: MOD.news });
+    renderNews();
+  });
+}
+
+function renderNews(){
+  var box = document.getElementById("news-body");
+  var when = document.getElementById("news-when");
+  when.textContent = MOD.stamps.news ? relativeTime(MOD.stamps.news) : "";
+
+  if(MOD.loading.news){ box.innerHTML = '<div class="mod-empty">Buscando manchetes...</div>'; return; }
+  if(MOD.errors.news){ box.innerHTML = '<div class="mod-error">' + escapeXml(MOD.errors.news) + "</div>"; return; }
+  if(MOD.news.length === 0){
+    box.innerHTML = '<div class="mod-empty">Clique em <b>↻</b> para carregar as manchetes dos seus ' +
+      MOD.topics.length + " tópicos.</div>";
+    return;
+  }
+
+  var html = "";
+  MOD.news.forEach(function(topic){
+    html += '<div class="news-topic"><div class="news-topic-title">' + escapeXml(topic.label) + "</div>";
+    if(!topic.ok || topic.items.length === 0){
+      html += '<div class="mod-empty" style="padding:6px 0">Sem manchetes agora.</div>';
+    }else{
+      topic.items.forEach(function(item){
+        var ts = Date.parse(item.pubDate || "");
+        html += '<a class="headline" href="' + escapeXml(item.link) + '" target="_blank" rel="noopener">' +
+          '<div class="headline-title">' + escapeXml(item.title) + "</div>" +
+          '<div class="headline-meta">' + escapeXml(item.source || "") +
+          (isNaN(ts) ? "" : " · " + escapeXml(relativeTime(ts))) + "</div></a>";
+      });
+    }
+    html += "</div>";
+  });
+  box.innerHTML = html;
+}
+
+/* ---------- CLIMA (Open-Meteo, sem chave) ---------- */
+function getWeather(){
+  var geo = loadJSON("kraker_geo", null);
+  var city = MOD.city;
+
+  function forecast(g){
+    var url = "https://api.open-meteo.com/v1/forecast?latitude=" + g.lat + "&longitude=" + g.lon +
+      "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max" +
+      "&timezone=" + encodeURIComponent(MOD.tz) + "&forecast_days=1";
+    return fetch(url).then(function(r){ return r.json(); }).then(function(d){
+      if(!d.daily) return null;
+      return {
+        city: g.name,
+        max: Math.round(d.daily.temperature_2m_max[0]),
+        min: Math.round(d.daily.temperature_2m_min[0]),
+        rain: d.daily.precipitation_probability_max[0]
+      };
+    });
+  }
+
+  if(geo && geo.name === city) return forecast(geo).catch(function(){ return null; });
+
+  return fetch("https://geocoding-api.open-meteo.com/v1/search?name=" +
+      encodeURIComponent(city) + "&count=1&language=pt&format=json")
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(!d.results || !d.results.length) return null;
+      var g = { name: city, lat: d.results[0].latitude, lon: d.results[0].longitude };
+      saveJSON("kraker_geo", g);
+      return forecast(g);
+    })
+    .catch(function(){ return null; });
+}
+
+/* ---------- IA auxiliar (usa a chave e o modelo da Parte 1) ---------- */
+function askAI(systemText, userText, maxTokens){
+  return callAI({
+    model: CONFIG.model,
+    max_tokens: maxTokens || 400,
+    system: systemText,
+    messages: [{ role: "user", content: userText }]
+  }).then(function(res){
+    if(!res || res.noKey || !res.ok) return null;
+    var data = res.data || {};
+    var text = (data.content && data.content[0] && data.content[0].text) || "";
+    return text.trim() || null;
+  }).catch(function(){ return null; });
+}
+
+/* ---------- MORNING DIGEST ---------- */
+function digestGoals(){
+  return NOTES.filter(function(n){ return n.area === "metas"; })
+    .slice(0, 2)
+    .map(function(n){ return n.title + ": " + n.body; });
+}
+
+function buildDigestPackage(){
+  return getWeather().then(function(weather){
+    var now = new Date();
+    var today = todayEvents();
+    var acao = actionEmails();
+    var manchetes = MOD.news.map(function(t){
+      return t.label + ": " + t.items.slice(0, 3).map(function(i){ return i.title; }).join(" | ");
+    });
+
+    return {
+      weather: weather,
+      dateLabel: WEEKDAYS[now.getDay()] + ", " + pad2(now.getDate()) + "/" + pad2(now.getMonth() + 1),
+      events: today.map(function(e){ return (e.allDay ? "dia todo" : hhmm(e.start)) + " · " + e.summary; }).slice(0, 15),
+      totalEmails: MOD.emails.length,
+      acao: acao.map(function(m){ return (m.from || "") + ": " + (m.resumo || m.subject || ""); }),
+      manchetes: manchetes,
+      metas: digestGoals()
+    };
+  });
+}
+
+function offlineDigest(pkg){
+  var parts = ["Bom dia, " + CONFIG.address + ". Hoje é " + pkg.dateLabel + "."];
+  if(pkg.weather){
+    parts.push("Em " + pkg.weather.city + ", máxima de " + pkg.weather.max +
+      " e mínima de " + pkg.weather.min + " graus, com " + pkg.weather.rain + " por cento de chance de chuva.");
+  }
+  parts.push(pkg.events.length
+    ? "Na agenda: " + pkg.events.join("; ") + "."
+    : "Sua agenda de hoje está livre.");
+  parts.push(pkg.acao.length
+    ? pkg.acao.length + " e-mail(s) pedindo ação: " + pkg.acao.slice(0, 3).join("; ") + "."
+    : "Nenhum e-mail pedindo ação no momento.");
+  if(pkg.manchetes.length) parts.push("No radar: " + pkg.manchetes.slice(0, 2).join(". ") + ".");
+  if(pkg.metas.length) parts.push("Foco do dia: " + pkg.metas[0] + ".");
+  return parts.join(" ");
+}
+
+function runDigest(spoken){
+  var box = document.getElementById("digest-body");
+  box.innerHTML = '<div class="mod-empty">Montando seu resumo do dia...</div>';
+  showPanel("digest");
+
+  return buildDigestPackage().then(function(pkg){
+    var compact =
+      "Data: " + pkg.dateLabel + "\n" +
+      (pkg.weather ? "Clima em " + pkg.weather.city + ": máx " + pkg.weather.max + "°, mín " +
+        pkg.weather.min + "°, chuva " + pkg.weather.rain + "%\n" : "") +
+      "Agenda de hoje: " + (pkg.events.length ? pkg.events.join(" ; ") : "livre") + "\n" +
+      "E-mails: " + pkg.totalEmails + " recentes, " + pkg.acao.length + " pedindo ação" +
+      (pkg.acao.length ? " (" + pkg.acao.slice(0, 5).join(" ; ") + ")" : "") + "\n" +
+      "Manchetes: " + (pkg.manchetes.length ? pkg.manchetes.join(" ; ") : "sem novidades") + "\n" +
+      "Metas do usuário: " + (pkg.metas.length ? pkg.metas.join(" ; ") : "—");
+
+    var system = "Você é " + CONFIG.name + ", assistente pessoal com personalidade de " + CONFIG.persona +
+      ', tratando o usuário como "' + CONFIG.address + '". Monte o briefing matinal em português do Brasil, ' +
+      "em texto corrido e natural para ser FALADO em voz alta (cerca de 30 segundos). " +
+      "Sem emojis, sem markdown, sem listas, sem asteriscos. Termine com uma frase curta de foco do dia " +
+      "conectada às metas do usuário.";
+
+    return askAI(system, compact, 500).then(function(answer){
+      var text = answer || offlineDigest(pkg);
+      var origem = answer ? "" : " · modo offline";
+      box.innerHTML = '<div class="digest-box">' + escapeXml(text) + "</div>" +
+        '<div class="digest-meta">Gerado ' + escapeXml(new Date().toLocaleTimeString("pt-BR")) +
+        escapeXml(origem) + "</div>";
+      saveJSON("jarvis_last_digest", dayKey(new Date()));
+      setAssistantLine(text);
+      if(spoken !== false) ttsSpeak(text);
+      return text;
+    });
+  });
+}
+
+/* ---------- comandos de voz locais (zero token) ---------- */
+function localCommand(text){
+  var n = normalize(text);
+  if(/\bbom dia\b/.test(n)) return { kind: "digest" };
+  if(/atualizar (os )?e-?mail/.test(n)) return { kind: "refreshMail" };
+  if(/atualizar (as )?noticia/.test(n)) return { kind: "refreshNews" };
+  if(/atualizar (a )?agenda/.test(n)) return { kind: "refreshCal" };
+  if(/(proximo compromisso|proxima reuniao|proximo evento)/.test(n)) return { kind: "next" };
+  if(/(agenda da semana|minha semana|proximos dias)/.test(n)) return { kind: "week" };
+  if(/(minha agenda|agenda de hoje|o que eu tenho hoje|compromissos de hoje)/.test(n)) return { kind: "today" };
+  if(/(tem e-?mail importante|algum e-?mail importante|e-?mail urgente)/.test(n)) return { kind: "mailAction" };
+  if(/(meus e-?mails|minhas mensagens|caixa de entrada)/.test(n)) return { kind: "mails" };
+  var topic = n.match(/noticias (?:de |sobre |da |do |das |dos )(.+)/);
+  if(topic) return { kind: "newsTopic", topic: topic[1].trim() };
+  if(/(noticias|manchetes|novidades do radar)/.test(n)) return { kind: "news" };
+  return null;
+}
+
+function say(text){
+  setAssistantLine(text);
+  ttsSpeak(text);
+}
+
+function speakToday(){
+  var list = todayEvents();
+  if(list.length === 0) return say("Sua agenda de hoje está livre, " + CONFIG.address + ".");
+  var falado = list.map(function(e){
+    return (e.allDay ? "dia todo" : hhmm(e.start).replace(":", " e ")) + ", " + e.summary;
+  }).join("; ");
+  say("Hoje você tem " + list.length + (list.length > 1 ? " compromissos: " : " compromisso: ") + falado + ".");
+}
+
+function speakNext(){
+  var ev = nextEvent();
+  if(!ev) return say("Não há nenhum compromisso à frente nos próximos dias, " + CONFIG.address + ".");
+  say("Seu próximo compromisso é " + ev.summary + ", " + humanCountdown(ev.start) +
+    ", às " + hhmm(ev.start).replace(":", " e ") + ".");
+}
+
+function speakWeek(){
+  if(MOD.events.length === 0) return say("Nenhum compromisso nos próximos sete dias, " + CONFIG.address + ".");
+  var groups = {};
+  var order = [];
+  MOD.events.forEach(function(ev){
+    var key = dayKey(ev.start);
+    if(!groups[key]){ groups[key] = []; order.push({ key: key, date: ev.start }); }
+    groups[key].push(ev);
+  });
+  var resumo = order.slice(0, 7).map(function(g){
+    return dayLabel(g.date).toLowerCase() + ": " + groups[g.key].length +
+      (groups[g.key].length > 1 ? " compromissos" : " compromisso");
+  }).join("; ");
+  say("Na sua semana: " + resumo + ".");
+}
+
+function speakMails(){
+  if(MOD.emails.length === 0){
+    say("Ainda não carreguei seus e-mails. Vou buscar agora, " + CONFIG.address + ".");
+    refreshEmails().then(function(){ if(MOD.emails.length) speakMails(); });
+    return;
+  }
+  var acao = actionEmails();
+  var info = MOD.emails.filter(function(m){ return m.balde === "info"; }).length;
+  var ruido = MOD.emails.filter(function(m){ return m.balde === "ruido"; }).length;
+  var frase = "Você tem " + acao.length + " pedindo ação, " + info + " de informação e " + ruido + " de ruído.";
+  if(acao.length){
+    frase += " Os que pedem ação: " + acao.slice(0, 4).map(function(m){
+      return (m.from || "") + ", " + (m.resumo || m.subject || "");
+    }).join("; ") + ".";
+  }
+  say(frase);
+}
+
+function speakMailAction(){
+  var acao = actionEmails();
+  if(MOD.emails.length === 0){
+    say("Deixa eu buscar seus e-mails primeiro, " + CONFIG.address + ".");
+    refreshEmails().then(function(){ speakMailAction(); });
+    return;
+  }
+  if(acao.length === 0) return say("Nada pedindo ação, " + CONFIG.address + ". Caixa tranquila.");
+  say(acao.length + (acao.length > 1 ? " e-mails pedem sua ação: " : " e-mail pede sua ação: ") +
+    acao.map(function(m){ return (m.from || "") + ", " + (m.resumo || m.subject || ""); }).join("; ") + ".");
+}
+
+function speakNews(topicName){
+  if(MOD.news.length === 0){
+    say("Vou buscar as manchetes agora, " + CONFIG.address + ".");
+    refreshNews().then(function(){ if(MOD.news.length) speakNews(topicName); });
+    return;
+  }
+  var alvo = MOD.news;
+  if(topicName){
+    var needle = normalize(topicName);
+    alvo = MOD.news.filter(function(t){ return normalize(t.label).indexOf(needle) !== -1; });
+    if(alvo.length === 0){
+      alvo = MOD.news.filter(function(t){
+        return normalize(t.label).split(/\s+/).some(function(w){ return w.length > 3 && needle.indexOf(w) !== -1; });
+      });
+    }
+    if(alvo.length === 0){
+      return say("Não tenho esse tópico no radar, " + CONFIG.address +
+        ". Os que acompanho são: " + MOD.news.map(function(t){ return t.label; }).join(", ") + ".");
+    }
+  }
+  var frase = alvo.map(function(t){
+    return t.label + ": " + t.items.slice(0, topicName ? 5 : 2).map(function(i){ return i.title; }).join("; ");
+  }).join(". ");
+  say(frase + ".");
+}
+
+function handleLocalCommand(cmd){
+  if(cmd.kind === "digest"){ runDigest(true); return; }
+  if(cmd.kind === "today"){ showPanel("agenda"); speakToday(); return; }
+  if(cmd.kind === "next"){ showPanel("agenda"); speakNext(); return; }
+  if(cmd.kind === "week"){ showPanel("agenda"); speakWeek(); return; }
+  if(cmd.kind === "mails"){ showPanel("emails"); speakMails(); return; }
+  if(cmd.kind === "mailAction"){ showPanel("emails"); speakMailAction(); return; }
+  if(cmd.kind === "news"){ showPanel("news"); speakNews(null); return; }
+  if(cmd.kind === "newsTopic"){ showPanel("news"); speakNews(cmd.topic); return; }
+  if(cmd.kind === "refreshMail"){
+    showPanel("emails");
+    say("Atualizando seus e-mails, " + CONFIG.address + ".");
+    refreshEmails();
+    return;
+  }
+  if(cmd.kind === "refreshNews"){
+    showPanel("news");
+    say("Atualizando as notícias, " + CONFIG.address + ".");
+    refreshNews();
+    return;
+  }
+  if(cmd.kind === "refreshCal"){
+    showPanel("agenda");
+    say("Atualizando sua agenda, " + CONFIG.address + ".");
+    refreshCalendars();
+    return;
+  }
+}
+
+/* ---------- ENVELOPES (Parte 1 preservada) ---------- */
+var _originalProcessCommand = processCommand;
+processCommand = function(text){
+  if(!text) return;
+  var cmd = localCommand(text);
+  if(cmd){
+    setUserLine(text);
+    handleLocalCommand(cmd);
+    return;
+  }
+  _originalProcessCommand(text);
+};
+
+var _originalBuildSystemPrompt = buildSystemPrompt;
+buildSystemPrompt = function(){
+  var base = _originalBuildSystemPrompt();
+  var hoje = todayEvents();
+  var linhas = [
+    "Agenda de hoje: " + (hoje.length
+      ? hoje.map(function(e){ return (e.allDay ? "dia todo" : hhmm(e.start)) + " " + e.summary; }).join(" · ")
+      : "nada marcado"),
+    "E-mails pedindo ação: " + actionEmails().length,
+    "Você também comanda os módulos de agenda, e-mails, notícias e o resumo matinal. " +
+      'Se perguntarem o que você sabe fazer, cite: "minha agenda", "próximo compromisso", ' +
+      '"agenda da semana", "meus e-mails", "tem e-mail importante?", "notícias", ' +
+      '"notícias de <assunto>" e "bom dia" para o resumo do dia.'
+  ];
+  return base + "\n\n" + linhas.join("\n");
+};
+
+var _originalActivateSystem = activateSystem;
+activateSystem = function(){
+  _originalActivateSystem();
+  // Primeira ativação do dia dispara o digest sozinho (uma vez só).
+  setTimeout(function(){
+    if(loadJSON("jarvis_last_digest", "") !== dayKey(new Date())){
+      runDigest(true);
+    }
+  }, 3200);
+};
+
+/* ---------- interface: abas e configuração ---------- */
+function showPanel(name){
+  document.querySelectorAll(".mod-tab").forEach(function(tab){
+    tab.classList.toggle("active", tab.getAttribute("data-panel") === name);
+  });
+  document.querySelectorAll(".mod-panel").forEach(function(panel){
+    panel.classList.toggle("active", panel.id === "panel-" + name);
+  });
+}
+
+function currentLevel(){
+  var saved = loadJSON("kraker_model_level", "equilibrado");
+  var found = MODEL_LEVELS.filter(function(l){ return l.id === saved; })[0];
+  return found || MODEL_LEVELS[1];
+}
+function applyModelLevel(level){
+  CONFIG.model = level.model;
+  saveJSON("kraker_model_level", level.id);
+  renderModelPicker();
+}
+function renderModelPicker(){
+  var box = document.getElementById("model-picker");
+  var active = currentLevel();
+  box.innerHTML = MODEL_LEVELS.map(function(level){
+    return '<div class="model-opt' + (level.id === active.id ? " active" : "") + '" data-level="' + level.id + '">' +
+      escapeXml(level.label) + "<small>" + escapeXml(level.hint) + "</small></div>";
+  }).join("");
+  box.querySelectorAll(".model-opt").forEach(function(el){
+    el.addEventListener("click", function(){
+      var picked = MODEL_LEVELS.filter(function(l){ return l.id === el.getAttribute("data-level"); })[0];
+      if(picked) applyModelLevel(picked);
+    });
+  });
+}
+
+function renderCalConfig(){
+  var box = document.getElementById("cal-list");
+  box.innerHTML = MOD.calendars.map(function(cal, i){
+    return '<div class="cfg-row" data-cal="' + i + '">' +
+      '<span class="cfg-dot" data-dot="' + i + '" style="background:' + cal.color + '" title="Trocar cor"></span>' +
+      '<input class="cal-name" type="text" value="' + escapeXml(cal.name) + '" placeholder="Nome">' +
+      '<input class="cal-url" type="password" value="' + escapeXml(cal.url || "") + '" placeholder="Endereço secreto iCal">' +
+      '<button class="cfg-del" data-del="' + i + '" title="Remover">✕</button>' +
+      "</div>";
+  }).join("");
+
+  box.querySelectorAll(".cfg-row").forEach(function(row){
+    var i = Number(row.getAttribute("data-cal"));
+    row.querySelector(".cal-name").addEventListener("input", function(e){
+      MOD.calendars[i].name = e.target.value; saveModuleConfig();
+    });
+    row.querySelector(".cal-url").addEventListener("input", function(e){
+      MOD.calendars[i].url = e.target.value.trim(); saveModuleConfig();
+    });
+    row.querySelector(".cfg-dot").addEventListener("click", function(){
+      var idx = CAL_PALETTE.indexOf(MOD.calendars[i].color);
+      MOD.calendars[i].color = CAL_PALETTE[(idx + 1) % CAL_PALETTE.length];
+      saveModuleConfig(); renderCalConfig(); renderAgenda();
+    });
+    row.querySelector(".cfg-del").addEventListener("click", function(){
+      MOD.calendars.splice(i, 1); saveModuleConfig(); renderCalConfig(); renderAgenda();
+    });
+  });
+}
+
+function renderTopicConfig(){
+  var box = document.getElementById("topic-list");
+  box.innerHTML = MOD.topics.map(function(topic, i){
+    return '<div class="cfg-row" data-topic="' + i + '">' +
+      '<input class="cal-name" type="text" value="' + escapeXml(topic.label) + '" placeholder="Nome do tópico">' +
+      '<input class="cal-url" type="text" value="' + escapeXml(topic.query) + '" placeholder="Busca no Google News">' +
+      '<button class="cfg-del" data-del="' + i + '" title="Remover">✕</button>' +
+      "</div>";
+  }).join("");
+
+  box.querySelectorAll(".cfg-row").forEach(function(row){
+    var i = Number(row.getAttribute("data-topic"));
+    row.querySelector(".cal-name").addEventListener("input", function(e){
+      MOD.topics[i].label = e.target.value; saveModuleConfig();
+    });
+    row.querySelector(".cal-url").addEventListener("input", function(e){
+      MOD.topics[i].query = e.target.value; saveModuleConfig();
+    });
+    row.querySelector(".cfg-del").addEventListener("click", function(){
+      MOD.topics.splice(i, 1); saveModuleConfig(); renderTopicConfig();
+    });
+  });
+}
+
+function renderMailStatus(){
+  var box = document.getElementById("mail-status");
+  if(!isHttp()){
+    box.innerHTML = '<span class="status-pill off">Precisa do site publicado</span>';
+    return;
+  }
+  fetch("/.netlify/functions/emails").then(function(r){ return r.json(); }).then(function(d){
+    box.innerHTML = d.configured
+      ? '<span class="status-pill ok">Conectado: ' + escapeXml(d.account) + "</span>"
+      : '<span class="status-pill off">Conta não configurada no servidor</span>';
+  }).catch(function(){
+    box.innerHTML = '<span class="status-pill off">Antena de e-mail indisponível</span>';
+  });
+}
+
+/* ---------- init dos módulos ---------- */
+document.addEventListener("DOMContentLoaded", function(){
+  loadModuleConfig();
+  applyModelLevel(currentLevel());
+
+  var cache = loadJSON("jarvis_news_cache", null);
+  if(cache && cache.results){
+    MOD.news = cache.results;
+    MOD.stamps.news = cache.at || 0;
+  }
+
+  document.getElementById("f-mail-count").value = MOD.mailCount;
+  document.getElementById("f-news-count").value = MOD.newsCount;
+  document.getElementById("f-city").value = MOD.city;
+
+  renderCalConfig();
+  renderTopicConfig();
+  renderAgenda();
+  renderEmails();
+  renderNews();
+  updateActionBadge();
+
+  document.querySelectorAll(".mod-tab").forEach(function(tab){
+    tab.addEventListener("click", function(){ showPanel(tab.getAttribute("data-panel")); });
+  });
+
+  document.getElementById("btn-cal-refresh").addEventListener("click", function(){ refreshCalendars(); });
+  document.getElementById("btn-mail-refresh").addEventListener("click", function(){ refreshEmails(); });
+  document.getElementById("btn-news-refresh").addEventListener("click", function(){ refreshNews(); });
+  document.getElementById("btn-digest").addEventListener("click", function(){ runDigest(true); });
+
+  document.getElementById("btn-add-cal").addEventListener("click", function(){
+    MOD.calendars.push({
+      name: "Agenda " + (MOD.calendars.length + 1),
+      color: CAL_PALETTE[MOD.calendars.length % CAL_PALETTE.length],
+      url: ""
+    });
+    saveModuleConfig(); renderCalConfig();
+  });
+  document.getElementById("btn-add-topic").addEventListener("click", function(){
+    MOD.topics.push({ label: "Novo tópico", query: "" });
+    saveModuleConfig(); renderTopicConfig();
+  });
+
+  document.getElementById("f-mail-count").addEventListener("change", function(e){
+    MOD.mailCount = Math.min(40, Math.max(5, Number(e.target.value) || 20));
+    e.target.value = MOD.mailCount; saveModuleConfig();
+  });
+  document.getElementById("f-news-count").addEventListener("change", function(e){
+    MOD.newsCount = Math.min(10, Math.max(1, Number(e.target.value) || 5));
+    e.target.value = MOD.newsCount; saveModuleConfig();
+  });
+  document.getElementById("f-city").addEventListener("change", function(e){
+    MOD.city = e.target.value.trim() || "São Paulo"; saveModuleConfig();
+  });
+
+  document.getElementById("btn-settings").addEventListener("click", renderMailStatus);
+
+  // Countdown do próximo evento continua vivo sem gastar nada.
+  setInterval(function(){
+    if(document.getElementById("panel-agenda").classList.contains("active")) renderAgenda();
+  }, 60000);
+
+  // Agenda carrega sozinha na abertura (é local + gratuito, não gasta token).
+  if(MOD.calendars.some(function(c){ return c.url; })) refreshCalendars();
 });
 
 })();
